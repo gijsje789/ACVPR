@@ -11,3 +11,11 @@ for ii=1:nfiles
    currentimage = imread(currentfilename);
    images{ii} = currentimage;
 end
+
+%% Variables
+
+%% Processing
+% Show an image
+origIm = figure;
+subplot(1,2,1)
+imshow(images{1}, [])
