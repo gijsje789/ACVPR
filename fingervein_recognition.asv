@@ -1,0 +1,7 @@
+%% Initialise
+% Clear variables, close figures
+clear variables
+close all
+
+% Read image folder
+imageFolder = dir('dataset/data/0001/*.png');
