@@ -14,9 +14,8 @@ end
 
 %% Variables
 GaborSigma = 5;
-dF = 8;
-Gaborf0 = 0.25;%(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
-GaborK = 1/(2 * pi * GaborSigma^2);
+dF = 2.5;
+F = 0.05;%(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
 
 %% Processing
 % Show an image
@@ -31,8 +30,21 @@ imshow(images{1}, [])
 % subplot(1,2,2)
 % imshow(bin);
 x=-25:25;
-y=-25:25;
-g = GaborK * exp((-(x.^2 + transpose(y.^2))) / (2 * GaborSigma^2));
-Gabor = g * exp(2*pi * i * Gaborf0 * sqrt(x.^2 + transpose(y.^2)));
+y=transpose(-25:25);
 subplot(2,1,2)
-surf(x,y,abs(Gabor));
+
+K = 1 / (2*pi*GaborSigma^2);
+g = K * exp( -(x.^2 + y.^2)/(2*GaborSigma^2) ); % Nice looking Gaussian with low peak and wide distribution.
+G = exp( 2*pi*1i*F*( sqrt( x.^2 + y.^2 ) ) ); % Only the exponent looks as expected. USing the rest looks more like the traditional gabor.
+
+figure
+subplot(1,3,1)
+surf(x,y,real(G));
+subplot(1,3,2)
+surf(x,y,imag(G));
+subplot(1,3,3)
+surf(x,y,abs(G));
+
+outIm = conv2(images{1}, abs(G), 'same');
+figure;
+imshow(abs(outIm), []);
