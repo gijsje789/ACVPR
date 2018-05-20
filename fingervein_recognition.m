@@ -36,7 +36,7 @@ subplot(2,1,2)
 
 K = 1 / (2*pi*GaborSigma^2);
 g = K * exp( -(x.^2 + y.^2)/(2*GaborSigma^2) ); % Nice looking Gaussian with low peak and wide distribution.
-G = g * cos( 2*pi*1i*F*( sqrt( x.^2 + y.^2 ) ) ); % Only the exponent looks as expected. USing the rest looks more like the traditional gabor.
+G = g * exp( 2*pi*1i*F*( sqrt( x.^2 + y.^2 ) ) ); % Only the exponent looks as expected. USing the rest looks more like the traditional gabor.
 
 figure
 subplot(1,3,1)
