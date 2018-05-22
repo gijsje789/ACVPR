@@ -19,3 +19,8 @@ end
 origIm = figure;
 subplot(1,2,1)
 imshow(images{1}, [])
+
+bw_thres = graythresh(images{1});
+bw_im = imbinarize(images{1}, bw_thres);
+subplot(1,2,2)
+imshow(bw_im);
