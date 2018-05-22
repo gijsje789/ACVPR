@@ -12,6 +12,8 @@ for ii=1:nfiles
    images{ii} = currentimage;
 end
 
+blobAnalyzer = vision.BlobAnalysis('LabelMatrixOutputPort', true, ...
+                                    'MinimumBlobArea', 25);
 %% Variables
 
 %% Processing
@@ -24,3 +26,9 @@ bw_thres = graythresh(images{1});
 bw_im = imbinarize(images{1}, bw_thres);
 subplot(1,2,2)
 imshow(bw_im);
+
+[area, centroid, ~, label] = blobAnalyzer(bw_im);
+[~, I] = max(area);
+hold on;
+plot(centroid(I,1), centroid(I,2), 'r*')
+hold off;
