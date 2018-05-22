@@ -19,16 +19,20 @@ blobAnalyzer = vision.BlobAnalysis('LabelMatrixOutputPort', true, ...
 %% Processing
 % Show an image
 origIm = figure;
-subplot(1,2,1)
+subplot(1,3,1)
 imshow(images{1}, [])
 
 bw_thres = graythresh(images{1});
 bw_im = imbinarize(images{1}, bw_thres);
-subplot(1,2,2)
-imshow(bw_im);
-
 [area, centroid, ~, label] = blobAnalyzer(bw_im);
 [~, I] = max(area);
+
+subplot(1,3,2)
+imshow(bw_im);
 hold on;
 plot(centroid(I,1), centroid(I,2), 'r*')
 hold off;
+
+cropped = images{1}(centroid(I,2)-80:centroid(I,2)+80, 1:end);
+subplot(1,3,3)
+imshow(cropped, []);
