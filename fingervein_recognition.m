@@ -11,8 +11,8 @@ for ii=1:nfiles
    currentimage = imread(currentfilename);
    images{ii} = currentimage;
 end
-
 %% Variables
+% i = 1; % Which finger to take.
 GaborSigma = 5;
 dF = 2.5;
 F = 0.1014;%(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
@@ -21,8 +21,16 @@ F = 0.1014;%(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
 %% Processing
 % Show an image
 origIm = figure;
-subplot(2,1,1)
-imshow(images{1}, [])
+
+for i=1:24
+    subplot(1,2,1)
+    imshow(images{i}, [])
+
+    cropped = cropFingerVeinImage(images{i});
+
+    subplot(1,2,2)
+    imshow(cropped, []);
+end
 
 % % Binarize using a adaptive threshold
 % Thres = adaptthresh(images{1}, 0.6);
