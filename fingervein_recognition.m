@@ -27,3 +27,10 @@ for i=1:24
     subplot(1,2,2)
     imshow(cropped, []);
 end
+
+%% mean curvature
+
+%% mean curvature
+veins = mean_curvature(cropped, 1, 5);
+
+figure, imshow(veins);
