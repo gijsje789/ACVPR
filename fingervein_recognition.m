@@ -24,12 +24,6 @@ origIm = figure;
 subplot(2,1,1)
 imshow(images{1}, [])
 
-% % Binarize using a adaptive threshold
-% Thres = adaptthresh(images{1}, 0.6);
-% bin = imbinarize(images{1}, Thres);
-% 
-% subplot(1,2,2)
-% imshow(bin);
 x=-25:25;
 y=transpose(-25:25);
 subplot(2,1,2)
