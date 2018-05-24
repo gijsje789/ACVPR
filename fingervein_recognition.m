@@ -15,8 +15,8 @@ end
 % i = 1; % Which finger to take.
 GaborSigma = 5;
 dF = 1.12; 
-F = ((sqrt(2*log(2))/(2*pi)) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma;
-% F = ((1/pi) * sqrt( log(2)/2 ) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma;
+% F = ((sqrt(2*log(2))/(2*pi)) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma;
+F = ((1/pi) * sqrt( log(2)/2 ) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma;
 x = -20:20;
 y = transpose(-20:20);    
 
@@ -48,9 +48,13 @@ for i=1:24
     imshow(images{i}, [])
 
     cropped = cropFingerVeinImage(images{i});
-
+    
+    lut = uint8(grayLevelGrouping(cropped));
+    
+    transformed = intlut(cropped, lut);
+    
     subplot(1,3,2)
-    imshow(cropped, []);
+    imshow(transformed, []);
     
     enhanced = conv2(cropped, abs(G));
     subplot(1,3,3)
