@@ -49,10 +49,6 @@ for i=1:24
 
     cropped = cropFingerVeinImage(images{i});
     
-    lut = uint8(grayLevelGrouping(cropped));
-    
-    transformed = intlut(cropped, lut);
-    
     subplot(1,3,2)
     imshow(transformed, []);
     
