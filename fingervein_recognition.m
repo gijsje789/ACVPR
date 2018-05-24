@@ -29,8 +29,6 @@ for i=1:24
 end
 
 %% mean curvature
-
-%% mean curvature
-veins = mean_curvature(cropped, 1, 5);
+veins = mean_curvature(currentimage, 1, 5);
 
 figure, imshow(veins);

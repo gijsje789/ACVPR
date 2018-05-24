@@ -6,5 +6,5 @@ function cropped = cropFingerVeinImage(fingerVein)
     bw_im = imdilate(bw_im, strel('rectangle', [75 75])); %big dilate to compensate for crooked fingers.
     [area, centroid, ~, ~] = blobAnalyzer(bw_im);
     [~, I] = max(area); % The blob with the largest area probably is the finger.
-    cropped = fingerVein(centroid(I,2)-80:centroid(I,2)+80, 1:end);
+    cropped = fingerVein(fix(centroid(I,2))-80:fix(centroid(I,2))+80, 1:end);
 end
