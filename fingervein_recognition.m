@@ -18,7 +18,8 @@ dF = 1.12;  % [2]
 F = (sqrt(log(2)/pi) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; %[1]
 % F = ((1/pi) * sqrt( log(2)/2 ) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; [2]
    
-
+a = 50;
+b = -4;
 %% Processing
 % Show an image
 origIm = figure;
@@ -26,16 +27,19 @@ gabor = figure;
 
 for i=1:24
     figure(origIm)
-    subplot(1,3,1)
+    subplot(1,4,1)
     imshow(images{i}, [])
 
     cropped = cropFingerVeinImage(images{i});
-    G = createGaborFilter(GaborSigma, F, 20);
+%     G = createGaborFilter(GaborSigma, F, 20);
+    G = createHighPassGaussian(a,b,5);
     
-    subplot(1,3,2)
+    subplot(1,4,2)
+    surf(1:5, 1:5, G)
+    subplot(1,4,3)
     imshow(cropped, []);    
-    enhanced = conv2(cropped, abs(G));
-    subplot(1,3,3)
+    enhanced = conv2(cropped, G);
+    subplot(1,4,4)
     imshow(enhanced, []);
 end
 
