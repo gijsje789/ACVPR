@@ -33,8 +33,7 @@ for i=1:24
     G = createGaborFilter(GaborSigma, F, 20);
     
     subplot(1,3,2)
-    imshow(cropped, []);
-    
+    imshow(cropped, []);    
     enhanced = conv2(cropped, abs(G));
     subplot(1,3,3)
     imshow(enhanced, []);
@@ -51,4 +50,3 @@ end
 % based on combination of gray-level grouping and circular gabor filter. In
 % Information Engineering and Computer Science, 2009. ICIECS 2009.
 % International Conference on (pp. 1-4). IEEE.
-
