@@ -26,33 +26,39 @@ for it=1:24
     figure(origIm)
     subplot(3,3,1)
     imshow(images{it}, [])
+    title('Original image');
 
     cropped = cropFingerVeinImage(images{it});
     G = createGaborFilter(GaborSigma, F, 20);
     
     subplot(3,3,4)
     imshow(cropped, []);
+    title('Cropped image');
     subplot(3,3,7)
     histogram((cropped), 256);
+    title('Histogram cropped image');
     
     enhanced = conv2(cropped, G);
     subplot(3,3,3)
     imshow((real(enhanced)), []);
-    title('Enhanced with real part of Gabor');
+    title('real of cropped * Gabor');
     subplot(3,3,2)
     histogram((real(enhanced)));
+    title('real of cropped * Gabor');
     
     subplot(3,3,6)
     imshow((imag(enhanced)), []);
-    title('Enhanced with imag part of Gabor');
+    title('imag of cropped * Gabor');
     subplot(3,3,5)
     histogram((imag(enhanced)));
+    title('imag of cropped * Gabor');
     
     subplot(3,3,9)
     imshow((abs(enhanced)), []);
-    title('Enhanced with abs part of Gabor');
+    title('Abs of cropped * Gabor');
     subplot(3,3,8)
     histogram((abs(enhanced)));
+    title('Abs of cropped * Gabor');
 end
 
 % [1]:
