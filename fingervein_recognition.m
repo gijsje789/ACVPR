@@ -14,7 +14,7 @@ end
 %% Variables
 % i = 1; % Which finger to take.
 GaborSigma = 5; % Both [1] and [2]
-dF = 1.12;  % [2]
+dF = 1.12;  % [2] -> 0.5-2.5
 F = (sqrt(log(2)/pi) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; %[1]
 % F = ((1/pi) * sqrt( log(2)/2 ) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; [2]
    
@@ -22,21 +22,37 @@ F = (sqrt(log(2)/pi) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; %[1]
 %% Processing
 % Show an image
 origIm = figure;
-gabor = figure;
-
-for i=1:24
+for it=1:24
     figure(origIm)
-    subplot(1,3,1)
-    imshow(images{i}, [])
+    subplot(3,3,1)
+    imshow(images{it}, [])
 
-    cropped = cropFingerVeinImage(images{i});
+    cropped = cropFingerVeinImage(images{it});
     G = createGaborFilter(GaborSigma, F, 20);
     
-    subplot(1,3,2)
-    imshow(cropped, []);    
-    enhanced = conv2(cropped, abs(G));
-    subplot(1,3,3)
-    imshow(enhanced, []);
+    subplot(3,3,4)
+    imshow(cropped, []);
+    subplot(3,3,7)
+    histogram((cropped), 256);
+    
+    enhanced = conv2(cropped, G);
+    subplot(3,3,3)
+    imshow((real(enhanced)), []);
+    title('Enhanced with real part of Gabor');
+    subplot(3,3,2)
+    histogram((real(enhanced)));
+    
+    subplot(3,3,6)
+    imshow((imag(enhanced)), []);
+    title('Enhanced with imag part of Gabor');
+    subplot(3,3,5)
+    histogram((imag(enhanced)));
+    
+    subplot(3,3,9)
+    imshow((abs(enhanced)), []);
+    title('Enhanced with abs part of Gabor');
+    subplot(3,3,8)
+    histogram((abs(enhanced)));
 end
 
 % [1]:
