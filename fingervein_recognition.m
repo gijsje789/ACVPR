@@ -11,24 +11,64 @@ for ii=1:nfiles
    currentimage = imread(currentfilename);
    images{ii} = currentimage;
 end
+
 %% Variables
-% i = 1; % Which finger to take.
+GaborSigma = 5;
+dF = 2.5;
+F = 0.1014;%(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
+% should be optimal F according to Zhang and Yang.
 
 %% Processing
 % Show an image
+
+images{1} = cropFingerVeinImage(images{1});
+
 origIm = figure;
+imshow(images{1}, []);
 
-for i=1:24
-    subplot(1,2,1)
-    imshow(images{i}, [])
+%% gaussian filter
 
-    cropped = cropFingerVeinImage(images{i});
+S= im2double(images{1});
 
-    subplot(1,2,2)
-    imshow(cropped, []);
-end
+sigma = 5;
+L = 2*ceil(sigma*3)+1;
+h = fspecial('gaussian', L, sigma);% create the PSF
+imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
 
-%% mean curvature
-veins = mean_curvature(currentimage, 1, 5);
+S = mat2gray(imfiltered, [0 256]);
 
-figure, imshow(veins);
+figure;
+imshow(S, []);
+
+%% maximum curvature method
+sigma = 5; % Parameter
+v_max_curvature = max_curvature(double(images{1}),1,sigma);
+
+% Binarise the vein image
+md = median(v_max_curvature(v_max_curvature>0));
+v_max_curvature_bin = v_max_curvature > md; 
+
+figure;
+subplot(2,1,1);
+imshow(v_max_curvature,[]);
+subplot(2,1,2);
+imshow(v_max_curvature_bin);
+
+%% repeated lines method
+
+fvr = ones(size(images{1}));
+
+veins = repeated_line(S, fvr, 3000, 1, 17);
+
+% Binarise the vein image
+md = median(veins(veins>0));
+v_repeated_line_bin = veins > md;
+
+se = strel('disk',1,0);
+v_repeated_line_bin = imerode(v_repeated_line_bin,se);
+
+figure; 
+subplot(2,1,1);
+imshow(veins,[]);
+subplot(2,1,2);
+imshow(v_repeated_line_bin);
