@@ -10,11 +10,11 @@ PERSON_COUNT = 2;   % 1 to X
 FINGER_COUNT = 2;
 FINGER_PHOTO_COUNT = 2;
 
-for person = 1:PERSON_COUNT    % TODO give maximum
+for person = 1:PERSON_COUNT
     
-    for finger = 1:FINGER_COUNT    % TODO give maximum
+    for finger = 1:FINGER_COUNT
         
-        for number = 1:FINGER_PHOTO_COUNT    % TODO give maximum
+        for number = 1:FINGER_PHOTO_COUNT
             
             % Gabor variables
             GaborSigma = 5;
@@ -222,21 +222,12 @@ for person = 1:PERSON_COUNT    % TODO give maximum
             data{db_counter,6} = validPtsOriginal;         % valid points
             data{db_counter,7} = lbp_info;                 % local binary pattern
             
-            fprintf('%d: done with person %d finger %d number %d\n',db_counter,person,finger,number);
+            total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
+            fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
             db_counter = db_counter + 1;
-            
             
         end
     end
 end
 
 save('database_rl_mark.mat','data');
-
-
-for it = 1:8
-    for it2 = 1:8
-        [~,matchmetric{it,it2}] = matchFeatures(data{it,7}, data{it2,7});
-    end
-end
-matchmetric2 = cellfun(@sum, matchmetric);
-
