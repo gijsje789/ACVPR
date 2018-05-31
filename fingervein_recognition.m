@@ -29,6 +29,7 @@ for it=1:24
     title('Original image');
 
     cropped = cropFingerVeinImage(images{it});
+    cropped = im2double(cropped);
     G = createGaborFilter(GaborSigma, F, 20);
     
     subplot(3,3,4)
