@@ -72,3 +72,23 @@ subplot(2,1,1);
 imshow(veins,[]);
 subplot(2,1,2);
 imshow(v_repeated_line_bin);
+
+%% Mean curvature method
+
+im = images{1};
+figure, imshow(im);
+fim=mat2gray(im);
+
+
+
+v_mean_curvature=mean_curvature(S);
+
+% Binarise the vein image
+md = median(v_mean_curvature(v_mean_curvature>0));
+v_mean_curvature_bin = v_max_curvature > md; 
+
+figure;
+subplot(2,1,1);
+imshow(v_mean_curvature);
+subplot(2,1,2);
+imshow(v_mean_curvature_bin);
