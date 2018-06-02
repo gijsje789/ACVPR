@@ -14,7 +14,7 @@ end
 %% Variables
 % i = 1; % Which finger to take.
 GaborSigma = 5; % Both [1] and [2]
-dF = 1.12;  % [2] -> 0.5-2.5
+dF = 2.5;  % [2] -> 0.5-2.5
 F = (sqrt(log(2)/pi) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; %[1]
 % F = ((1/pi) * sqrt( log(2)/2 ) * ((2^dF + 1)/(2^dF - 1)))/GaborSigma; [2]
    
@@ -39,7 +39,8 @@ for it=1:24
     histogram((cropped), 256);
     title('Histogram cropped image');
     
-    enhanced = conv2(cropped, G);
+    enhanced = conv2(cropped, real(G), 'valid');
+    enhanced = 255 * mat2gray(enhanced);
     subplot(3,3,3)
     imshow((real(enhanced)), []);
     title('real of cropped * Gabor');
