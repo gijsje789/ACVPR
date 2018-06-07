@@ -207,7 +207,6 @@ for person = 1:PERSON_COUNT
             data{db_counter,6} = validPtsOriginal;         % valid points
             data{db_counter,7} = lbp_info;                 % local binary pattern
             data{db_counter,8} = branch_array;             % branchpoint array
-            data{db_counter,9} = v_repeated_line_bin;      % RL for template matching
             
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
