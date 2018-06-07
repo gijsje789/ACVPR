@@ -34,12 +34,12 @@ for compare = 1:data_count
         % show individual images
         figure;
         subplot(2,2,1);
-        imshow(img_rl_reference);
+        imshow(img_reference);
         title('reference finger');
         
         % show individual images
         subplot(2,2,2);
-        imshow(img_rl);
+        imshow(img);
         title(strcat('P:',num2str(person),', F:',num2str(finger),', N:',num2str(number)));
         
         %% ================== method specific =============================
@@ -50,10 +50,7 @@ for compare = 1:data_count
         F = 0.1014;
         %(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
         % should be optimal F according to Zhang and Yang.
-        
-        % TODO test image
-        img = imread('dataset/data/0001/0001_1_1_120509-135315.png');
-        
+
         % crop image
         img = cropFingerVeinImage(img);
         S = im2double(img);

@@ -8,7 +8,7 @@ imageSet = read_imageSet('0001','0005');
 
 PERSON_COUNT = 2;   % 1 to X
 FINGER_COUNT = 2;    % max 6
-FINGER_PHOTO_COUNT = 2;     % max 4
+FINGER_PHOTO_COUNT = 4;     % max 4
 
 for person = 1:PERSON_COUNT
     
@@ -25,7 +25,7 @@ for person = 1:PERSON_COUNT
             img = get_fingerImage(imageSet, person, finger, number);
             
             % crop image
-            img = cropFingerVeinImage(img);
+            %img = cropFingerVeinImage(img);
             S = im2double(img);
             
             % variables for Gaussian filter
