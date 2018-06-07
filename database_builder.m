@@ -1,14 +1,14 @@
 % finger vein recognition
 clear; clc; close all;
 
+% DEBUG = false means no figures, DEBUG = true means all figures
 DEBUG = false;
 db_counter = 1;
-
 imageSet = read_imageSet('0001','0005');
 
 PERSON_COUNT = 2;   % 1 to X
-FINGER_COUNT = 6;    % max 6
-FINGER_PHOTO_COUNT = 4;     % max 4
+FINGER_COUNT = 2;    % max 6
+FINGER_PHOTO_COUNT = 2;     % max 4
 
 for person = 1:PERSON_COUNT
     
@@ -23,9 +23,6 @@ for person = 1:PERSON_COUNT
             
             % read comparison image
             img = get_fingerImage(imageSet, person, finger, number);
-            
-            % TODO test image
-            %img = imread('dataset/data/0001/0001_1_1_120509-135315.png');
             
             % crop image
             img = cropFingerVeinImage(img);
@@ -152,9 +149,6 @@ for person = 1:PERSON_COUNT
                 imshow(img_rl_result);
                 title('new skeleton');
                 
-                % save to file DEBUG
-                %imwrite(img_rl_result,'test2.png')
-                
                 % display result with branchpoints
                 subplot(4,3,10);
                 imshow(img_rl_result);
@@ -213,6 +207,7 @@ for person = 1:PERSON_COUNT
             data{db_counter,6} = validPtsOriginal;         % valid points
             data{db_counter,7} = lbp_info;                 % local binary pattern
             data{db_counter,8} = branch_array;             % branchpoint array
+            data{db_counter,9} = v_repeated_line_bin;      % RL for template matching
             
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
