@@ -7,8 +7,8 @@ db_counter = 1;
 imageSet = read_imageSet('0001','0005');
 
 PERSON_COUNT = 2;   % 1 to X
-FINGER_COUNT = 2;
-FINGER_PHOTO_COUNT = 2;
+FINGER_COUNT = 6;    % max 6
+FINGER_PHOTO_COUNT = 4;     % max 4
 
 for person = 1:PERSON_COUNT
     
@@ -17,9 +17,7 @@ for person = 1:PERSON_COUNT
         for number = 1:FINGER_PHOTO_COUNT
             
             % Gabor variables
-            GaborSigma = 5;
-            dF = 2.5;
-            F = 0.1014;
+            GaborSigma = 5; dF = 2.5; F = 0.1014;
             %(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
             % should be optimal F according to Zhang and Yang.
             
@@ -75,13 +73,6 @@ for person = 1:PERSON_COUNT
                 imshow(img_rl_fill);
                 title('clean');
             end
-            % % make average eliminating loose pixels
-            % img_rl_majority = bwmorph(img_rl_open,'majority');
-            %
-            % % show result after majority/averaging
-            % subplot(5,2,5);
-            % imshow(img_rl_majority);
-            % title('majority');
             
             % skeletonize first time
             img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
@@ -221,6 +212,7 @@ for person = 1:PERSON_COUNT
             data{db_counter,5} = featuresOriginal;         % features
             data{db_counter,6} = validPtsOriginal;         % valid points
             data{db_counter,7} = lbp_info;                 % local binary pattern
+            data{db_counter,8} = branch_array;             % branchpoint array
             
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
@@ -230,4 +222,4 @@ for person = 1:PERSON_COUNT
     end
 end
 
-save('database_rl_mark.mat','data');
+save('database_rl.mat','data');
