@@ -31,7 +31,7 @@ for i=1:24
 
 %     cropped = cropFingerVeinImage(images{i}); % takes approximately 0.03 seconds.
     [cropped, region, edges] = cropFingerVeinImageLee(images{i});
-    G = createGaborFilter(GaborSigma, F, 20);
+%     G = createGaborFilter(GaborSigma, F, 20);
     
     subplot(1,3,2)
     imshow(cropped, []); 
