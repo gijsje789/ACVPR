@@ -216,4 +216,4 @@ for person = 1:PERSON_COUNT
     end
 end
 
-save('database_rl.mat','data');
+save('database.mat','data');

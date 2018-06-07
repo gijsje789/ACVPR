@@ -2,8 +2,9 @@
 clc; clear; close all;
 
 % load database
-load database_rl.mat;
+load database.mat;
 [data_count, ~] = size(data);
+data_count = 1;
 
 % empty matches array
 matches_array = [];
