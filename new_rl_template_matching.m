@@ -1,7 +1,7 @@
 % input two images, and compare for similarity
 clc; clear; close all;
 
-DEBUG = true;
+SHOW_FIGURES = true;
 
 % load database
 load database.mat;
@@ -10,9 +10,9 @@ load database.mat;
 % read comparison image
 im_original = data{1,1};
 % read image to compare
-im_compare = data{3,1};
+im_compare = data{2,1};
 
-if DEBUG == true
+if SHOW_FIGURES == true
     % show individual images
     figure;
     subplot(1,2,1);
@@ -28,11 +28,6 @@ for iteration = 1:2
     else
         img = im_compare;
     end
-    
-    % Gabor variables
-    GaborSigma = 5; dF = 2.5; F = 0.1014;
-    %(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
-    % should be optimal F according to Zhang and Yang.
     
     % crop image
     img = cropFingerVeinImage(img);
@@ -53,7 +48,7 @@ for iteration = 1:2
     md = median(veins(veins>0));
     v_repeated_line_bin = veins > md;
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(v_repeated_line_bin);
         title('RL');
@@ -65,7 +60,7 @@ for iteration = 1:2
     img_rl_clean = bwmorph(img,'clean');
     img_rl_fill = bwmorph(img_rl_clean,'fill');
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_fill);
         title('cleaned filled');
@@ -74,7 +69,7 @@ for iteration = 1:2
     % skeletonize first time
     img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_skel);
         title('skeletonized');
@@ -83,7 +78,7 @@ for iteration = 1:2
     % open filter image
     img_rl_open = bwareaopen(img_rl_skel, 20);
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_open);
         title('opened');
@@ -110,7 +105,7 @@ for iteration = 1:2
     % subtract dead ends
     skelD = img_rl_open - Dmask;
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(skelD);
         title('dead ends gone');
@@ -122,7 +117,7 @@ for iteration = 1:2
     img_rl_clean = bwmorph(skelD,'clean');
     img_rl_result = bwmorph(img_rl_clean,'fill');
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_result);
         title('cleaned');
@@ -131,7 +126,7 @@ for iteration = 1:2
     % skeletonize again to optimize branchpoint detection
     img_rl_result = bwmorph(img_rl_result,'skel',inf);
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_result);
         title('skeletonized');
@@ -142,7 +137,7 @@ for iteration = 1:2
     [i,j] = find(bw1br);
     branch_array = [j,i];
     
-    if DEBUG == true
+    if SHOW_FIGURES == true
         figure;
         imshow(img_rl_result); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
@@ -166,7 +161,7 @@ ptsCompare = detectSURFFeatures(im_compare);
 [featuresDistorted,validPtsDistorted] = extractFeatures(im_compare,ptsCompare);
 
 % get index pairs
-index_pairs = matchFeatures(featuresOriginal,featuresDistorted);
+index_pairs = matchFeatures(featuresOriginal,featuresDistorted,'unique',true);
 
 % find matched points
 matchedPtsOriginal = validPtsOriginal(index_pairs(:,1));
@@ -201,7 +196,7 @@ comb_before(:,:,3) = im_original;
 % calculate match
 full_match_percentage = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + sum(comb_after(:) == 2));
 
-if DEBUG == true
+if SHOW_FIGURES == true
     % show result before
     subplot(2,2,3);
     imshow(comb_before);
