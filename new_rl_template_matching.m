@@ -7,22 +7,10 @@ DEBUG = true;
 load database.mat;
 [data_count, ~] = size(data);
 
-
-% % read all data for first database entry
-% img = data{compare_with,1};                         % cropped finger image
-% person = data{compare_with,2};                      % person number
-% finger = data{compare_with,3};                      % finger number
-% number = data{compare_with,4};                      % photo number
-% featuresOriginal = data{compare_with,5};            % features
-% validPtsOriginal = data{compare_with,6};            % valid points
-% lbp_info = data{compare_with,7};                    % local binary pattern
-% branch_array = data{compare_with,8};                % branchpoint array
-% img_rl_skeleton = data{compare_with,9};             % RL skeletonized
-
 % read comparison image
 im_original = data{1,1};
 % read image to compare
-im_compare = data{2,1};
+im_compare = data{3,1};
 
 if DEBUG == true
     % show individual images
@@ -67,27 +55,18 @@ for iteration = 1:2
     
     if DEBUG == true
         figure;
-        subplot(3,3,1);
         imshow(v_repeated_line_bin);
         title('RL');
     end
-%     se = strel('disk',1,0);
-%     v_repeated_line_bin = imerode(v_repeated_line_bin,se);
     
     img = v_repeated_line_bin;
-    
-%     if DEBUG == true
-%         subplot(3,3,2);
-%         imshow(img);
-%         title('eroded');
-%     end
     
     % clean and fill (correct isolated black and white pixels)
     img_rl_clean = bwmorph(img,'clean');
     img_rl_fill = bwmorph(img_rl_clean,'fill');
     
     if DEBUG == true
-        subplot(3,3,2);
+        figure;
         imshow(img_rl_fill);
         title('cleaned filled');
     end
@@ -96,16 +75,16 @@ for iteration = 1:2
     img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
     
     if DEBUG == true
-        subplot(3,3,4);
+        figure;
         imshow(img_rl_skel);
         title('skeletonized');
     end
     
     % open filter image
-    img_rl_open = bwareaopen(img_rl_skel, 5);
+    img_rl_open = bwareaopen(img_rl_skel, 20);
     
     if DEBUG == true
-        subplot(3,3,5);
+        figure;
         imshow(img_rl_open);
         title('opened');
     end
@@ -123,7 +102,7 @@ for iteration = 1:2
     for i = 1:numel(x)
         D = bwdistgeodesic(img_rl_open,x(i),y(i));
         distanceToBranchPt = min(D(B_loc));
-        if distanceToBranchPt < 10
+        if distanceToBranchPt < 30
             Dmask(D < distanceToBranchPt) = true;
         end
     end
@@ -132,7 +111,7 @@ for iteration = 1:2
     skelD = img_rl_open - Dmask;
     
     if DEBUG == true
-        subplot(3,3,6);
+        figure;
         imshow(skelD);
         title('dead ends gone');
     end
@@ -144,7 +123,7 @@ for iteration = 1:2
     img_rl_result = bwmorph(img_rl_clean,'fill');
     
     if DEBUG == true
-        subplot(3,3,7);
+        figure;
         imshow(img_rl_result);
         title('cleaned');
     end
@@ -153,7 +132,7 @@ for iteration = 1:2
     img_rl_result = bwmorph(img_rl_result,'skel',inf);
     
     if DEBUG == true
-        subplot(3,3,8);
+        figure;
         imshow(img_rl_result);
         title('skeletonized');
     end
@@ -164,7 +143,7 @@ for iteration = 1:2
     branch_array = [j,i];
     
     if DEBUG == true
-        subplot(3,3,9);
+        figure;
         imshow(img_rl_result); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
         title('skeletonized + branchpoints');
@@ -193,8 +172,19 @@ index_pairs = matchFeatures(featuresOriginal,featuresDistorted);
 matchedPtsOriginal = validPtsOriginal(index_pairs(:,1));
 matchedPtsDistorted = validPtsDistorted(index_pairs(:,2));
 
+% show all matched points
+figure;
+subplot(2,2,1);
+showMatchedFeatures(im_original,im_compare,matchedPtsOriginal,matchedPtsDistorted);
+title('Matched points including outliers');
+
 % estimate the transformation based on the points
 [tform,inlierPtsDistorted,inlierPtsOriginal] = estimateGeometricTransform(matchedPtsDistorted,matchedPtsOriginal,'similarity');
+
+% show useful matched points
+subplot(2,2,2);
+showMatchedFeatures(im_original,im_compare,inlierPtsOriginal,inlierPtsDistorted);
+title('Matching points (inliers only)');
 
 % warp compare image to original transform
 outputView = imref2d(size(im_original));
@@ -213,13 +203,12 @@ full_match_percentage = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + s
 
 if DEBUG == true
     % show result before
-    figure;
-    subplot(1,2,1);
+    subplot(2,2,3);
     imshow(comb_before);
     title('merge before transform');
     
     % show result after
-    subplot(1,2,2);
+    subplot(2,2,4);
     imshow(comb_after, [0 2]);
     title(strcat('merge after transform (',num2str(round(full_match_percentage)),'% match)'));
 end
