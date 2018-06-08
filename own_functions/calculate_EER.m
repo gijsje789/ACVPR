@@ -52,21 +52,28 @@ for threshold = 0 : 0.01 : max_threshold
     Fadd(ii,:) = [threshold, FR + FA];
 end
 
+% caculating minimum of added values. This is done instead of the
+% intersection between the curves, because we dont have perfect parabolas.
+[~, minind] = min(Fadd);
+minval = Fadd(minind(2),:);
+
+EER = minval(2)/2;
+
 % plotting figure
 figure;
 plot(FRR(:,1),FRR(:,2))
 hold on;
 plot(FAR(:,1),FAR(:,2))
-title('EER')
+hold on;
+y = minval(2)/2;
+line([0,max_threshold],[y,y],'Color',[0 1 0])
+hold on 
+x = minval(1); 
+line([x x],[0 100],'Color',[0 1 0])
+title(strcat('EER: ', num2str(minval(2)/2), '%'))
 xlabel('Decision threshold (%)')
 ylabel('Error rate (%)')
-legend('FRR','FAR')
-
-% caculating minimum of added values.
-[~, minind] = min(Fadd);
-minval = Fadd(minind(2),:);
-
-EER = minval(2);
+legend('FRR','FAR','EER')
 
 
 
