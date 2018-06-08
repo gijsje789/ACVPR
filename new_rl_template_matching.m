@@ -1,7 +1,7 @@
 % input two images, and compare for similarity
 clc; clear; close all;
 
-DEBUG = false;
+DEBUG = true;
 
 % load database
 load database.mat;
@@ -71,23 +71,23 @@ for iteration = 1:2
         imshow(v_repeated_line_bin);
         title('RL');
     end
-    se = strel('disk',1,0);
-    v_repeated_line_bin = imerode(v_repeated_line_bin,se);
+%     se = strel('disk',1,0);
+%     v_repeated_line_bin = imerode(v_repeated_line_bin,se);
     
     img = v_repeated_line_bin;
     
-    if DEBUG == true
-        subplot(3,3,2);
-        imshow(img);
-        title('eroded');
-    end
+%     if DEBUG == true
+%         subplot(3,3,2);
+%         imshow(img);
+%         title('eroded');
+%     end
     
     % clean and fill (correct isolated black and white pixels)
     img_rl_clean = bwmorph(img,'clean');
     img_rl_fill = bwmorph(img_rl_clean,'fill');
     
     if DEBUG == true
-        subplot(3,3,3);
+        subplot(3,3,2);
         imshow(img_rl_fill);
         title('cleaned filled');
     end

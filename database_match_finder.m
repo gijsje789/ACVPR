@@ -54,8 +54,8 @@ for compare = 1:data_count
         
         %% ================== select matching method =============================
         
-        %full_match_percentage = rl_template_matching(img_rl_skeleton_reference, img_rl_skeleton);
-        full_match_percentage = mac_template_matching(img_mac_skeleton_reference, img_mac_skeleton);
+        full_match_percentage = rl_template_matching(img_rl_skeleton_reference, img_rl_skeleton);
+        %full_match_percentage = mac_template_matching(img_mac_skeleton_reference, img_mac_skeleton);
         
         %% ================= end select matching method ==========================
         % report status
