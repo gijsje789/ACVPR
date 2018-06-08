@@ -16,11 +16,10 @@ for person = 1:PERSON_COUNT
         
         for number = 1:FINGER_PHOTO_COUNT
             
-            %% read current image
+            % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
             %% build RL skeleton
-            
             % crop image
             current_source_img_cropped = cropFingerVeinImage(current_source_img);
             current_source_img_cropped = im2double(current_source_img_cropped);
@@ -118,9 +117,8 @@ for person = 1:PERSON_COUNT
             
             %% find LBP features
             
-            histPerPoint = createLBPofSkel(img_mac_skeleton, branch_array_mac);
-            %histPerPoint = createLBPofSkel(img_rl_skeleton, branch_array_rl);
-            
+            lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
+            %lbp_info = createLBPofSkel(img_rl_skeleton, branch_array_rl);
             
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
@@ -133,8 +131,7 @@ for person = 1:PERSON_COUNT
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
-            %data{db_counter,11} = lbp_info;                % local binary pattern
-            
+            data{db_counter,11} = lbp_info;                % local binary pattern
             
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
