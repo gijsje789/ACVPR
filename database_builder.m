@@ -1,13 +1,13 @@
 % finger vein recognition
 clear; clc; close all;
 
-% DEBUG = false means no figures, DEBUG = true means all figures
-DEBUG = false;
+% for progress
 db_counter = 1;
-imageSet = read_imageSet('0001','0005');
+% read folders
+imageSet = read_imageSet('0001','0060');
 
-PERSON_COUNT = 2;   % 1 to X
-FINGER_COUNT = 2;    % max 6
+PERSON_COUNT = 60;   % 1 to X
+FINGER_COUNT = 6;    % max 6
 FINGER_PHOTO_COUNT = 4;     % max 4
 
 for person = 1:PERSON_COUNT
@@ -16,16 +16,15 @@ for person = 1:PERSON_COUNT
         
         for number = 1:FINGER_PHOTO_COUNT
             
-            % Gabor variables
-            GaborSigma = 5; dF = 2.5; F = 0.1014;
-            %(sqrt( log(2/pi))*(2^dF + 1)/(2^dF - 1)) / GaborSigma;
-            % should be optimal F according to Zhang and Yang.
-            
-            % read comparison image
+            %% read current image
             img = get_fingerImage(imageSet, person, finger, number);
             
+            %% build RL skeleton
+            % Gabor variables
+            GaborSigma = 5; dF = 2.5; F = 0.1014;
+            
             % crop image
-            %img = cropFingerVeinImage(img);
+            img = cropFingerVeinImage(img);
             S = im2double(img);
             
             % variables for Gaussian filter
@@ -35,7 +34,7 @@ for person = 1:PERSON_COUNT
             imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
             S = mat2gray(imfiltered, [0 256]);
             
-            % repeated lines method
+            % find repeated lines method image
             fvr = ones(size(img));
             veins = repeated_line(S, fvr, 3000, 1, 17);
             
@@ -46,53 +45,19 @@ for person = 1:PERSON_COUNT
             se = strel('disk',1,0);
             v_repeated_line_bin = imerode(v_repeated_line_bin,se);
             
-            if DEBUG == true
-                % make figure for all substeps
-                figure;
-                
-                % show RL original image
-                subplot(4,3,1);
-                imshow(img);
-                title('original');
-                
-                % show RL original image
-                subplot(4,3,2);
-                imshow(v_repeated_line_bin);
-                title('RL');
-            end
             % clean and fill (correct isolated black and white pixels)
             img_rl_clean = bwmorph(v_repeated_line_bin,'clean');
             img_rl_fill = bwmorph(img_rl_clean,'fill');
             
-            if DEBUG == true
-                % show after correction
-                subplot(4,3,3);
-                imshow(img_rl_fill);
-                title('clean');
-            end
-            
             % skeletonize first time
             img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
             
-            if DEBUG == true
-                % show skeletonized
-                subplot(4,3,4);
-                imshow(img_rl_skel);
-                title('skeleton');
-            end
             % open filter image
             img_rl_open = bwareaopen(img_rl_skel, 5);  % remove unconnected pixels with length X
-            
-            if DEBUG == true
-                % show result after open filter
-                subplot(4,3,5);
-                imshow(img_rl_open);
-                title('open');
-            end
+
             % find branchpoints & endpoints
             B = bwmorph(img_rl_open, 'branchpoints');
             E = bwmorph(img_rl_open, 'endpoints');
-            
             [y,x] = find(E);
             B_loc = find(B);
             
@@ -110,95 +75,51 @@ for person = 1:PERSON_COUNT
             % subtract dead ends
             skelD = img_rl_open - Dmask;
             
-            if DEBUG == true
-                % display dead ends
-                subplot(4,3,6);
-                imshow(Dmask);
-                title('dead ends');
-                
-                % display leftover veins
-                subplot(4,3,7);
-                imshow(skelD);
-                %hold all;
-                title('new skeleton');
-            end
-            % filled gaps
-            img_filled = filledgegaps(skelD, 7);
-            
-            if DEBUG == true
-                subplot(4,3,8);
-                imshow(img_filled);
-                title('gap filled');
-            end
+            % fill gaps
+            img_filled = filledgegaps(skelD, 9);
             
             % clean and fill (correct isolated black and white pixels)
             img_rl_clean = bwmorph(img_filled,'clean');
             img_rl_result = bwmorph(img_rl_clean,'fill');
             
             % skeletonize again to optimize branchpoint detection
-            img_rl_result = bwmorph(img_rl_result,'skel',inf);
+            img_rl_skeleton = bwmorph(img_rl_result,'skel',inf);
             
             % find branchpoints remaining and put in array
-            bw1br = bwmorph(img_rl_result, 'branchpoints');
+            bw1br = bwmorph(img_rl_skeleton, 'branchpoints');
             [i,j] = find(bw1br);
             branch_array = [j,i];
             
-            if DEBUG == true
-                % display result without branchpoints
-                subplot(4,3,9);
-                imshow(img_rl_result);
-                title('new skeleton');
-                
-                % display result with branchpoints
-                subplot(4,3,10);
-                imshow(img_rl_result);
-                hold all;
-                plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
-                title('new skeleton with branchpoints');
-                
-                % result in separate figure
-                figure;
-                subplot(3,1,1);
-                imshow(img);
-                title('original');
-                
-                subplot(3,1,2);
-                imshow(v_repeated_line_bin);
-                title('RL');
-                
-                subplot(3,1,3);
-                imshow(img_rl_result);
-                hold all;
-                plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
-                title('veins and branchpoints');
-            end
+            %% build MC skeleton
             
-            windowSize = 20;
-            for i = 1:size(branch_array,1)
-                x_min = branch_array(i,1)-windowSize;
-                x_max = branch_array(i,1)+windowSize;
-                y_min = branch_array(i,2)-windowSize;
-                y_max = branch_array(i,2)+windowSize;
-                if x_min < 1
-                    x_min = 1;
-                end
-                if x_max > size(img_rl_result,2)
-                    x_max = size(img_rl_result,2);
-                end
-                if y_min < 1
-                    y_min = 1;
-                end
-                if y_max > size(img_rl_result,1)
-                    y_max = size(img_rl_result,1);
-                end
-                
-                image = veins(y_min:y_max,x_min:x_max);
-                lbp_info(i,:) = extractLBPFeatures(image, 'Upright', false, 'Radius', 3);
-            end
+            %% find LBP features
             
-            ptsImage = detectSURFFeatures(img_rl_result,'MetricThreshold',1000);
-            [featuresOriginal,validPtsOriginal] = extractFeatures(img_rl_result,ptsImage);
+%             windowSize = 20;
+%             for i = 1:size(branch_array,1)
+%                 x_min = branch_array(i,1)-windowSize;
+%                 x_max = branch_array(i,1)+windowSize;
+%                 y_min = branch_array(i,2)-windowSize;
+%                 y_max = branch_array(i,2)+windowSize;
+%                 if x_min < 1
+%                     x_min = 1;
+%                 end
+%                 if x_max > size(img_rl_skeleton,2)
+%                     x_max = size(img_rl_skeleton,2);
+%                 end
+%                 if y_min < 1
+%                     y_min = 1;
+%                 end
+%                 if y_max > size(img_rl_skeleton,1)
+%                     y_max = size(img_rl_skeleton,1);
+%                 end
+%                 
+%                 image = veins(y_min:y_max,x_min:x_max);
+%                 lbp_info(i,:) = extractLBPFeatures(image, 'Upright', false, 'Radius', 3);
+%             end
+%              
+          
             
+            %% build data array
             data{db_counter,1} = img;                      % cropped finger image
             data{db_counter,2} = person;                   % person number
             data{db_counter,3} = finger;                   % finger number
@@ -207,7 +128,9 @@ for person = 1:PERSON_COUNT
             data{db_counter,6} = validPtsOriginal;         % valid points
             data{db_counter,7} = lbp_info;                 % local binary pattern
             data{db_counter,8} = branch_array;             % branchpoint array
+            data{db_counter,9} = img_rl_skeleton;          % RL skeletonized
             
+            %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
             db_counter = db_counter + 1;
@@ -216,4 +139,5 @@ for person = 1:PERSON_COUNT
     end
 end
 
+% save findings to database
 save('database.mat','data');
