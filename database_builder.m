@@ -4,11 +4,11 @@ clear; clc; close all;
 % for progress
 db_counter = 1;
 % read folders
-imageSet = read_imageSet('0001','0060');
+imageSet = read_imageSet('0001','0002');
 
-PERSON_COUNT = 60;   % 1 to X
-FINGER_COUNT = 6;    % max 6
-FINGER_PHOTO_COUNT = 4;     % max 4
+PERSON_COUNT = 2;               % 1 to X
+FINGER_COUNT = 6;               % max 6
+FINGER_PHOTO_COUNT = 4;         % max 4
 
 for person = 1:PERSON_COUNT
     
@@ -17,26 +17,26 @@ for person = 1:PERSON_COUNT
         for number = 1:FINGER_PHOTO_COUNT
             
             %% read current image
-            img = get_fingerImage(imageSet, person, finger, number);
+            current_source_img = get_fingerImage(imageSet, person, finger, number);
             
             %% build RL skeleton
             % Gabor variables
             GaborSigma = 5; dF = 2.5; F = 0.1014;
             
             % crop image
-            img = cropFingerVeinImage(img);
-            S = im2double(img);
+            current_source_img_cropped = cropFingerVeinImage(current_source_img);
+            current_source_img_cropped = im2double(current_source_img_cropped);
             
             % variables for Gaussian filter
             sigma = 5;
             L = 2*ceil(sigma*3)+1;
             h = fspecial('gaussian', L, sigma);% create the PSF
-            imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
-            S = mat2gray(imfiltered, [0 256]);
+            imfiltered = imfilter(current_source_img_cropped, h, 'replicate', 'conv'); % apply the filter
+            current_source_img_cropped = mat2gray(imfiltered, [0 256]);
             
             % find repeated lines method image
-            fvr = ones(size(img));
-            veins = repeated_line(S, fvr, 3000, 1, 17);
+            fvr = ones(size(current_source_img_cropped));
+            veins = repeated_line(current_source_img_cropped, fvr, 3000, 1, 17);
             
             % Binarise the vein image
             md = median(veins(veins>0));
@@ -88,12 +88,39 @@ for person = 1:PERSON_COUNT
             % find branchpoints remaining and put in array
             bw1br = bwmorph(img_rl_skeleton, 'branchpoints');
             [i,j] = find(bw1br);
-            branch_array = [j,i];
+            branch_array_rl = [j,i];
             
-            %% build MC skeleton
+            %% build MAC skeleton
             
+            % to double
+            current_source_img_double = im2double(current_source_img);
+            
+            % evaluate difference between enhance and not enhance in report
+            img_mac = enhance_finger(current_source_img_double);
+            %img_mac = imresize(img_rl, 0.5);
+            
+            % find Lee regions (finger region)
+            fvr = lee_region(img_mac,4,40);    
+            
+            % extract veins using maximum curvature method
+            v_max_curvature = miura_max_curvature(img_mac,fvr,3);
+            
+            % binarize the vein image
+            md = median(v_max_curvature(v_max_curvature>0));
+            v_max_curvature_bin = v_max_curvature > md;
+            
+            % skeletonize and fill gaps
+            bw1 = filledgegaps(v_max_curvature_bin, 7);
+            img_mac_skeleton  = bwareaopen(bw1,5);
+            
+            % find branchpoints remaining and put in array
+            bw1br = bwmorph(img_mac_skeleton, 'branchpoints');
+            [i,j] = find(bw1br);
+            branch_array_mac = [j,i];
+            
+            %% build MEC skeleton
+             
             %% find LBP features
-            
 %             windowSize = 20;
 %             for i = 1:size(branch_array,1)
 %                 x_min = branch_array(i,1)-windowSize;
@@ -116,23 +143,26 @@ for person = 1:PERSON_COUNT
 %                 image = veins(y_min:y_max,x_min:x_max);
 %                 lbp_info(i,:) = extractLBPFeatures(image, 'Upright', false, 'Radius', 3);
 %             end
-%              
-          
+
             
-            %% build data array
-            data{db_counter,1} = img;                      % cropped finger image
+            %% fill database entry
+            data{db_counter,1} = current_source_img;       % non-cropped finger image
             data{db_counter,2} = person;                   % person number
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
-            data{db_counter,5} = featuresOriginal;         % features
-            data{db_counter,6} = validPtsOriginal;         % valid points
-            data{db_counter,7} = lbp_info;                 % local binary pattern
-            data{db_counter,8} = branch_array;             % branchpoint array
-            data{db_counter,9} = img_rl_skeleton;          % RL skeletonized
+            data{db_counter,5} = img_rl_skeleton;          % RL skeletonized
+            data{db_counter,6} = img_mac_skeleton;         % MAC skeletonized
+            data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
+            data{db_counter,8} = branch_array_rl;          % branchpoint array RL
+            data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
+            data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
+            %data{db_counter,11} = lbp_info;                % local binary pattern
+            
             
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
-            fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
+            %fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
+            fprintf('%d/%d\n',db_counter,total);
             db_counter = db_counter + 1;
             
         end
