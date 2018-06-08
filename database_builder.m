@@ -117,7 +117,9 @@ for person = 1:PERSON_COUNT
             %% build MEC skeleton
             
             %% find LBP features
-                       
+            
+            histPerPoint = createLBPofSkel(img_mac_skeleton, branch_array_mac);
+            %histPerPoint = createLBPofSkel(img_rl_skeleton, branch_array_rl);
             
             
             %% fill database entry

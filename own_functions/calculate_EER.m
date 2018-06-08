@@ -64,9 +64,9 @@ legend('FRR','FAR')
 
 % caculating minimum of added values.
 [~, minind] = min(Fadd);
-minval = Fadd(minind(2));
+minval = Fadd(minind(2),:);
 
-EER = minval;
+EER = minval(2);
 
 
 
