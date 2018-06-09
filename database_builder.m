@@ -6,7 +6,7 @@ db_counter = 1;
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0002');
 
-PERSON_COUNT = 2;               % max 60
+PERSON_COUNT = 1;               % max 60
 FINGER_COUNT = 6;               % max 6
 FINGER_PHOTO_COUNT = 4;         % max 4
 
@@ -20,47 +20,91 @@ for person = 1:PERSON_COUNT
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
             %% build RL skeleton
-            % crop image
-            current_source_img_cropped = cropFingerVeinImage(current_source_img);
-            current_source_img_cropped = im2double(current_source_img_cropped);
+
+            % enhance image (contrast) 
+            img = enhance_finger(im2double(current_source_img));
             
             % variables for Gaussian filter
-            sigma = 5;
-            L = 2*ceil(sigma*3)+1;
-            % create the PSF
+            sigma = 4; L = 2*ceil(sigma*3)+1;
             h = fspecial('gaussian', L, sigma);
-            % apply the filter
-            imfiltered = imfilter(current_source_img_cropped, h, 'replicate', 'conv');
-            current_source_img_cropped = mat2gray(imfiltered, [0 256]);
+            img = imfilter(img, h, 'replicate', 'conv');
+
+            mask_height = 4; mask_width = 20;
+            [fvr, edges] = lee_region(img,mask_height,mask_width);
             
-            % find repeated lines method image
-            fvr = ones(size(current_source_img_cropped));
-            veins = repeated_line(current_source_img_cropped, fvr, 3000, 1, 17);
+            [m,n] = size(img);
             
-            % binarise the vein image
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(1,c)
+                        img(1:r-1,c) = 0;
+                        break
+                    end
+                end
+            end
+            
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(2,c)
+                        img(r:m,c) = 0;
+                        break
+                    end
+                end
+            end
+            
+            % repeated lines method
+            %fvr = ones(size(im));
+            veins = repeated_line(img, fvr, 3000, 1, 17);
+            
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(1,c)
+                        veins(1:r,c) = 0;
+                        break
+                    end
+                end
+            end
+            
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(2,c)
+                        veins(r-1:m,c) = 0;
+                        break
+                    end
+                end
+            end
+
+            % Binarise the vein image
             md = median(veins(veins>0));
             v_repeated_line_bin = veins > md;
             
             % clean and fill (correct isolated black and white pixels)
             img_rl_clean = bwmorph(v_repeated_line_bin,'clean');
             img_rl_fill = bwmorph(img_rl_clean,'fill');
+
+            % for export to database
+            img_rl_bin = img_rl_fill;
             
             % skeletonize first time
             img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
             
             % open filter image
-            img_rl_open = bwareaopen(img_rl_skel, 5);  % remove unconnected pixels with length X
+            img_rl_open = bwareaopen(img_rl_skel, 10);
             
+            img_filledgaps = filledgegaps(img_rl_open, 7);
+
             % find branchpoints & endpoints
-            B = bwmorph(img_rl_open, 'branchpoints');
-            E = bwmorph(img_rl_open, 'endpoints');
+            B = bwmorph(img_filledgaps, 'branchpoints');
+            E = bwmorph(img_filledgaps, 'endpoints');
+            
             [y,x] = find(E);
             B_loc = find(B);
-            Dmask = false(size(img_rl_open));
+            
+            Dmask = false(size(img_filledgaps));
             
             % find dead ends
-            for k = 1:numel(x)
-                D = bwdistgeodesic(img_rl_open,x(k),y(k));
+            for i = 1:numel(x)
+                D = bwdistgeodesic(img_filledgaps,x(i),y(i));
                 distanceToBranchPt = min(D(B_loc));
                 if distanceToBranchPt < 10
                     Dmask(D < distanceToBranchPt) = true;
@@ -68,13 +112,10 @@ for person = 1:PERSON_COUNT
             end
             
             % subtract dead ends
-            skelD = img_rl_open - Dmask;
-            
-            % fill gaps
-            img_filled = filledgegaps(skelD, 9);
+            skelD = img_filledgaps - Dmask;
             
             % clean and fill (correct isolated black and white pixels)
-            img_rl_clean = bwmorph(img_filled,'clean');
+            img_rl_clean = bwmorph(skelD,'clean');
             img_rl_result = bwmorph(img_rl_clean,'fill');
             
             % skeletonize again to optimize branchpoint detection
@@ -84,6 +125,7 @@ for person = 1:PERSON_COUNT
             bw1br = bwmorph(img_rl_skeleton, 'branchpoints');
             [i,j] = find(bw1br);
             branch_array_rl = [j,i];
+            
             
             %% build MAC skeleton
             
@@ -99,10 +141,12 @@ for person = 1:PERSON_COUNT
             
             % extract veins using maximum curvature method
             v_max_curvature = miura_max_curvature(img_mac,fvr,3);
-            
+
             % binarize the vein image
             md = median(v_max_curvature(v_max_curvature>0));
             v_max_curvature_bin = v_max_curvature > md;
+                        
+            img_mac_bin = v_max_curvature_bin;  
             
             % skeletonize and fill gaps
             bw1 = filledgegaps(v_max_curvature_bin, 7);
@@ -117,7 +161,7 @@ for person = 1:PERSON_COUNT
             
             %% find LBP features
             
-            lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
+            %lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
             %lbp_info = createLBPofSkel(img_rl_skeleton, branch_array_rl);
             
             %% fill database entry
@@ -125,13 +169,13 @@ for person = 1:PERSON_COUNT
             data{db_counter,2} = person;                   % person number
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
-            data{db_counter,5} = img_rl_skeleton;          % RL skeletonized
-            data{db_counter,6} = img_mac_skeleton;         % MAC skeletonized
+            data{db_counter,5} = img_rl_bin;               % RL binary
+            data{db_counter,6} = img_mac_bin;         % MAC binary
             %data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
-            data{db_counter,11} = lbp_info;                % local binary pattern
+            %data{db_counter,11} = lbp_info;                % local binary pattern
             
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
@@ -143,5 +187,9 @@ for person = 1:PERSON_COUNT
     end
 end
 
-% save findings to database
+% delete previous database
+db_file = fullfile(cd, 'database.mat');
+delete(db_file);
+
+% save findings to new database
 save('database.mat','data');

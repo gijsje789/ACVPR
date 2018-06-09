@@ -17,8 +17,8 @@ for compare = 1:data_count
     person_reference = data{compare,2};                      % person number
     finger_reference = data{compare,3};                      % finger number
     number_reference = data{compare,4};                      % photo number
-    img_rl_skeleton_reference = data{compare,5};             % RL skeletonized
-    img_mac_skeleton_reference = data{compare,6};            % MAC skeletonized
+    img_rl_bin_reference = data{compare,5};             % RL binary
+    img_mac_bin_reference = data{compare,6};            % MAC binary
     %img_mec_skeleton_reference = data{compare,7};           % MEC skeletonized
     branch_array_rl_reference = data{compare,8};             % branchpoint array RL
     branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
@@ -32,8 +32,8 @@ for compare = 1:data_count
         person = data{compare_with,2};                      % person number
         finger = data{compare_with,3};                      % finger number
         number = data{compare_with,4};                      % photo number
-        img_rl_skeleton = data{compare_with,5};               % RL skeletonized
-        img_mac_skeleton = data{compare_with,6};              % MAC skeletonized
+        img_rl_bin = data{compare_with,5};               % RL binary
+        img_mac_bin = data{compare_with,6};              % MAC binary
         %img_mec_skeleton = data{compare_with,7};              % MEC skeletonized
         branch_array_rl = data{compare_with,8};               % branchpoint array RL
         branch_array_mac = data{compare_with,9};              % branchpoint array MAC
@@ -42,8 +42,8 @@ for compare = 1:data_count
         
         %% ================== select matching method =============================
         
-        full_match_percentage = rl_template_matching(img_rl_skeleton_reference, img_rl_skeleton);
-        %full_match_percentage = mac_template_matching(img_mac_skeleton_reference, img_mac_skeleton);
+        %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
+        full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
         
         %% ================= end select matching method ==========================
         
@@ -51,6 +51,10 @@ for compare = 1:data_count
         total = data_count*data_count;
         fprintf('MATCHING: %d/%d\n',m_counter,total);
         m_counter = m_counter + 1;
+        
+         % round percentage
+        %full_match_percentage = round(full_match_percentage);
+        %full_match_percentage = round(full_match_percentage,2);
         
         % save result to matches array
         matches_array(compare, compare_with) = full_match_percentage;
@@ -60,7 +64,8 @@ end
 % save to file
 save('result_matches.mat','matches_array');
 
-% calculate EER, print result and show graph
+% calculate EER, print result and show graph, 
+% DO NOT ROUND "FULLMATCHPERCENTAGE" FOR ACCURATE EER
 EER = calculate_EER(matches_array);
 fprintf('EER: %.2f %%\n',EER);
 
