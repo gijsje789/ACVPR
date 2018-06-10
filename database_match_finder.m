@@ -42,8 +42,8 @@ for compare = 1:data_count
         
         %% ================== select matching method =============================
         
-        %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
-        full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+        full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
+        %full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
         
         %% ================= end select matching method ==========================
         
@@ -65,9 +65,8 @@ end
 save('result_matches.mat','matches_array');
 
 % calculate EER, print result and show graph, 
-% DO NOT ROUND "FULLMATCHPERCENTAGE" FOR ACCURATE EER
+% DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
 EER = calculate_EER(matches_array);
 fprintf('EER: %.2f %%\n',EER);
-
 
 

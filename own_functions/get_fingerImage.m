@@ -1,4 +1,4 @@
-function [im] = get_fingerImage(imageSet, person, finger, number)
+function im = get_fingerImage(imageSet, person, finger, number)
 % Returns a specific image using data indices person,finger,number from a
 % dataset
 
