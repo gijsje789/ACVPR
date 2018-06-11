@@ -140,7 +140,7 @@ for person = 1:PERSON_COUNT
             
             %% find LBP features
             
-            %lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
+            lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
             %lbp_info = createLBPofSkel(img_rl_skeleton, branch_array_rl);
             
             %% fill database entry
