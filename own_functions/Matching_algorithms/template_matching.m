@@ -23,17 +23,24 @@ index_pairs = matchFeatures(featuresOriginal,featuresDistorted);
 matchedPtsOriginal = validPtsOriginal(index_pairs(:,1));
 matchedPtsDistorted = validPtsDistorted(index_pairs(:,2));
 
-% estimate the transformation based on the points
-[tform,~,~] = estimateGeometricTransform(matchedPtsDistorted,matchedPtsOriginal,'similarity');
+if matchedPtsDistorted.Count > 1 && matchedPtsOriginal.Count > 1
+    
+    % estimate the transformation based on the points
+    [tform,~,~] = estimateGeometricTransform(matchedPtsDistorted,matchedPtsOriginal,'similarity');
+    
+    % warp reference image to original transform
+    outputView = imref2d(size(img));
+    Ir = imwarp(img_reference,tform,'OutputView',outputView);
+    
+    % add images to see effect of transformation
+    comb_after = Ir + img;
+    
+    % calculate perfect match
+    full_match_percentage = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + sum(comb_after(:) == 2));
+    
+else
+    full_match_percentage = 0;
+end
 
-% warp reference image to original transform
-outputView = imref2d(size(img));
-Ir = imwarp(img_reference,tform,'OutputView',outputView);
-
-% add images to see effect of transformation
-comb_after = Ir + img;
-
-% calculate perfect match
-full_match_percentage = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + sum(comb_after(:) == 2));
 
 
