@@ -141,6 +141,90 @@ for person = 1:PERSON_COUNT
             
             %% build MEC skeleton
             
+            % Tested using enhance; did not improve results. 
+            %ima = adapthisteq(image);
+            %image = enhance_finger(current_source_img);
+            image = imresize(im2double(current_source_img), 0.5);
+            %image = current_source_img;
+            
+            mask_height=4; % Height of the mask
+            mask_width=20; % Width of the mask
+            [fvr, edges] = lee_region(image,mask_height,mask_width);
+            x = 1: 1 : length(edges(2,:));
+
+            [m,n] = size(image);
+            
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(1,c)
+                       image(1:r-1,c) = 0; 
+                       break
+                    end
+                end
+            end
+
+            for c = 1 : n
+                for r = 1 : m
+                    if r > edges(2,c)
+                       image(r:m,c) = 0; 
+                       break
+                    end
+                end
+            end
+            
+            % gaussian filter
+
+            S= im2double(image);
+
+            sigma = 3.2;
+            L = 2*ceil(sigma*3)+1;
+            h = fspecial('gaussian', L, sigma);% create the PSF
+            imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
+
+            S = imfiltered;%mat2gray(imfiltered, [0 256]);
+
+
+            % if no resize, gaussian will add random noise to black areas so run this again.
+            % mask_height=4; % Height of the mask
+            % mask_width=20; % Width of the mask
+            % [fvr, edges] = lee_region(image,mask_height,mask_width);
+            % x = 1: 1 : length(edges(2,:));
+            % 
+            % [m,n] = size(S);
+            % 
+            % for c = 1 : n
+            %     for r = 1 : m
+            %         if r > edges(1,c)
+            %            S(1:r-1,c) = 0; 
+            %            break
+            %         end
+            %     end
+            % end
+            % 
+            % for c = 1 : n
+            %     for r = 1 : m
+            %         if r > edges(2,c)
+            %            S(r:m,c) = 0; 
+            %            break
+            %         end
+            %     end
+            % end
+  
+
+            % Mean curvature method
+
+            v_mean_curvature = mean_curvature(S);
+
+            % Binarise the vein image
+            md = 0.01;
+            img_mec_bin = v_mean_curvature > md; 
+
+
+            bw1 = filledgegaps(img_mec_bin, 7);
+            img_mec_skeleton  = bwareaopen(bw1,10);
+
+            
+            
             %% find LBP features
             
             lbp_info = createLBPofSkel(img_enhanced_mac, branch_array_mac);
@@ -153,7 +237,7 @@ for person = 1:PERSON_COUNT
             data{db_counter,4} = number;                   % photo number
             data{db_counter,5} = img_rl_bin;               % RL binary
             data{db_counter,6} = img_mac_bin;              % MAC binary
-            %data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
+            data{db_counter,7} = img_mec_bin;             % MEC binary
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
