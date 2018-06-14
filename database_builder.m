@@ -20,7 +20,7 @@ for person = 1:PERSON_COUNT
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
             % enhance image (contrast)
-            img = enhance_finger(im2double(current_source_img));
+            img = imresize(im2double(current_source_img), 0.5);
             
             %% build RL skeleton
             img_enhanced_rl = img;
@@ -56,24 +56,6 @@ for person = 1:PERSON_COUNT
             % repeated lines method
             %fvr = ones(size(im));
             veins = repeated_line(img_gauss, fvr, 3000, 1, 17);
-            
-%             for c = 1 : n
-%                 for r = 1 : m
-%                     if r > edges(1,c)
-%                         veins(1:r,c) = 0;
-%                         break
-%                     end
-%                 end
-%             end
-%             
-%             for c = 1 : n
-%                 for r = 1 : m
-%                     if r > edges(2,c)
-%                         veins(r-1:m,c) = 0;
-%                         break
-%                     end
-%                 end
-%             end
             
             % binarize the vein image
             md = median(veins(veins>0));
@@ -112,8 +94,6 @@ for person = 1:PERSON_COUNT
             
             %% build MAC skeleton
             
-            % TODO evaluate difference between enhance and not enhance in report
-%             img_mac = enhance_finger(im2double(current_source_img));
             %img_mac = imresize(img_rl, 0.5);
             
             img_enhanced_mac = img;
@@ -152,12 +132,12 @@ for person = 1:PERSON_COUNT
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
             data{db_counter,5} = img_rl_bin;               % RL binary
-            data{db_counter,6} = img_mac_bin;              % MAC binary
+%             data{db_counter,6} = img_mac_bin;              % MAC binary
             %data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
-            data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
+%             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
-            data{db_counter,11} = lbp_info;                % local binary pattern
+%             data{db_counter,11} = lbp_info;                % local binary pattern
             
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
