@@ -24,12 +24,12 @@ for compare = 1:data_count
     number_reference = data{compare,4};                      % photo number
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
-    img_mec_skeleton_reference = data{compare,7};          % MEC skeletonized
+    img_mec_skeleton_reference = data{compare,7};            % MEC skeletonized
     branch_array_rl_reference = data{compare,8};             % branchpoint array RL
     branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
-    branch_array_mec_reference = data{compare,10};         % branchpoint array MEC
+    branch_array_mec_reference = data{compare,10};           % branchpoint array MEC
     lbp_info_reference = data{compare,11};                   % local binary pattern
-    img_mac_gray_reference = data{compare,12};                   % local binary pattern
+    img_mac_gray_reference = data{compare,12};               % local binary pattern
     
     for compare_with = 1:data_count
         
@@ -57,6 +57,9 @@ for compare = 1:data_count
             % TODO
         elseif strcmp(test_method,'LBP')
             error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
+            if error ~= -1
+                matches_array(compare,compare_with) = error;
+            end
         else
             fprintf('invalid test method. Use RL, MAC, MEC or LBP');
         end
@@ -67,26 +70,25 @@ for compare = 1:data_count
         total = data_count*data_count;
         fprintf('MATCHING: %d/%d\n',m_counter,total);
         m_counter = m_counter + 1;
-        
         % save result to matches array
         %matches_array(compare, compare_with) = full_match_percentage;
-        if error ~= -1
-            matches_array(compare,compare_with) = error;
-        end
+
     end
 end
 
-min = min(min(matches_array));
-max = max(max(matches_array));
-matches_array = 100-(matches_array./(max-min).*100);
+% for LBP find range and fill matches array
+if strcmp(test_method,'LBP')
+    max = max(max(matches_array));
+    matches_array = 100-(matches_array./max.*100);
+end
 
 % save to file
 save('result_matches.mat','matches_array');
 
-% calculate EER, print result and show graph,
+% calculate EER, print result and show graph
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
 [EER, EERthreshold] = calculate_EER(matches_array);
-fprintf('EER: %.2f %%\n',EER);
+fprintf('EER: %.2f %% THRESHOLD: %d %%\n',EER,EERthreshold);
 
 
 
