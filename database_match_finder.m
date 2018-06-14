@@ -13,7 +13,7 @@ load 'database.mat';
 % empty matches array
 matches_array = zeros(data_count,data_count);
 
-% intialize counter
+% intialize progress counter
 m_counter = 1;
 
 for compare = 1:data_count
@@ -53,7 +53,7 @@ for compare = 1:data_count
         elseif strcmp(test_method,'MAC')
             full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
         elseif strcmp(test_method,'MEC')
-            % TODO
+            full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin);
         elseif strcmp(test_method,'LBP')
             error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
             if error ~= -1
@@ -71,7 +71,7 @@ for compare = 1:data_count
         total = data_count*data_count;
         fprintf('MATCHING: %d/%d\n',m_counter,total);
         m_counter = m_counter + 1;
-
+        
     end
 end
 
@@ -84,12 +84,9 @@ end
 % save to file
 save('result_matches.mat','matches_array');
 
-% calculate EER, print result and show graph
+% calculate EER, print result and show EER graph
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
 [EER, EERthreshold] = calculate_EER(matches_array);
-fprintf('EER: %.2f %% THRESHOLD: %d %%\n',EER,EERthreshold);
-
-
-
+fprintf('EER: %.2f %% OPTIMAL THRESHOLD: %.2f %%\n',EER,EERthreshold);
 
 

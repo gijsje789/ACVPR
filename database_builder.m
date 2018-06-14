@@ -1,7 +1,7 @@
 % finger vein recognition
 clear; clc; close all;
 
-% for progress
+% counter for progress
 db_counter = 1;
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
@@ -24,7 +24,7 @@ for person = 1:PERSON_COUNT
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
-            % resize image for speed purposes
+            % resize image for speed purposes (50%)
             img = imresize(im2double(current_source_img), 0.5);
             
             %% build RL skeleton
@@ -56,6 +56,7 @@ for person = 1:PERSON_COUNT
             % (9) MAC branch array
             % (10) MEC branch array
             % (11) LBP info
+            % (12) MAC grayscale for LBP
             
             if RL_SKEL
                 data{db_counter,5} = img_rl_bin;               % RL binary
@@ -86,7 +87,7 @@ for person = 1:PERSON_COUNT
     end
 end
 
-% delete previous database if applicable
+% delete previous database if present
 db_file = fullfile(cd, 'database.mat');
 delete(db_file);
 
