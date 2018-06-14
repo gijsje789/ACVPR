@@ -9,6 +9,11 @@ imageSet = read_imageSet('0001','0060');
 PERSON_COUNT = 2;              % max 60
 FINGER_COUNT = 6;               % max 6
 FINGER_PHOTO_COUNT = 4;         % max 4
+RL_SKEL = true;            % Enable repeated line tracking
+MAC_SKEL = true;            % Enable MAC
+MEC_SKEL = true;           % Enable MEC
+LBP_EN = true;             % Enable LBP
+
 
 for person = 1:PERSON_COUNT
     
@@ -19,235 +24,66 @@ for person = 1:PERSON_COUNT
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
-            % TEST
-            imout_hallo = imresize(current_source_img, 0.5);
+            % enhance image (contrast)
+            img = imresize(im2double(current_source_img), 0.5);
             
             %% build RL skeleton
-            
-            % enhance image (contrast)
-            img = enhance_finger(im2double(current_source_img));
-            img_enhanced_rl = img;
-            
-            % variables for Gaussian filter
-            sigma = 4; L = 2*ceil(sigma*3)+1;
-            h = fspecial('gaussian', L, sigma);
-            img = imfilter(img, h, 'replicate', 'conv');
-            
-            mask_height = 4; mask_width = 20;
-            [fvr, edges] = lee_region(img,mask_height,mask_width);
-            
-            [m,n] = size(img);
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(1,c)
-                        img(1:r-1,c) = 0;
-                        break
-                    end
-                end
+            if RL_SKEL
+                tic
+                [img_rl_bin, branch_array_rl] = RLskeletonize(img);
+                toc
             end
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(2,c)
-                        img(r:m,c) = 0;
-                        break
-                    end
-                end
-            end
-            
-            % repeated lines method
-            %fvr = ones(size(im));
-            veins = repeated_line(img, fvr, 3000, 1, 17);
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(1,c)
-                        veins(1:r,c) = 0;
-                        break
-                    end
-                end
-            end
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(2,c)
-                        veins(r-1:m,c) = 0;
-                        break
-                    end
-                end
-            end
-            
-            % binarize the vein image
-            md = median(veins(veins>0));
-            v_repeated_line_bin = veins > md;
-            
-            % clean and fill (correct isolated black and white pixels)
-            img_rl_clean = bwmorph(v_repeated_line_bin,'clean');
-            img_rl_fill = bwmorph(img_rl_clean,'fill');
-            
-            % for export to database
-            img_rl_bin = img_rl_fill;
-            
-            % skeletonize first time
-            img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
-            
-            % open filter image
-            img_rl_open = bwareaopen(img_rl_skel, 10);
-            
-            % fill gaps smaller than 7 pixels
-            img_filledgaps = filledgegaps(img_rl_open, 7);
-            
-            % remove dead ends shorter than 10 pixels
-            skelD = removeDeadEnds(img_filledgaps, 10);
-            
-            % clean and fill (correct isolated black and white pixels)
-            img_rl_clean = bwmorph(skelD,'clean');
-            img_rl_result = bwmorph(img_rl_clean,'fill');
-            
-            % skeletonize again to optimize branchpoint detection
-            img_rl_skeleton = bwmorph(img_rl_result,'skel',inf);
-            
-            % find branchpoints remaining and put in array
-            bw1br = bwmorph(img_rl_skeleton, 'branchpoints');
-            [i,j] = find(bw1br);
-            branch_array_rl = [j,i];
             
             %% build MAC skeleton
-            
-            % TODO evaluate difference between enhance and not enhance in report
-            %img_mac = enhance_finger(im2double(current_source_img));
-            img_mac = imresize(im2double(current_source_img), 0.5);
-            
-            img_enhanced_mac = img_mac;
-            
-            % find Lee regions (finger region)
-            fvr = lee_region(img_mac,4,40);
-            
-            % extract veins using maximum curvature method
-            v_max_curvature = miura_max_curvature(img_mac,fvr,3);
-            
-            % binarize the vein image
-            md = median(v_max_curvature(v_max_curvature>0));
-            v_max_curvature_bin = v_max_curvature > md;
-            
-            img_mac_bin = v_max_curvature_bin;
-            
-            % skeletonize and fill gaps
-            bw1 = filledgegaps(v_max_curvature_bin, 7);
-            img_mac_skeleton  = bwareaopen(bw1,5);
-            
-            % find branchpoints remaining and put in array
-            bw1br = bwmorph(img_mac_skeleton, 'branchpoints');
-            [i,j] = find(bw1br);
-            branch_array_mac = [j,i];
-            
+            if MAC_SKEL
+                tic
+                [img_mac_bin, branch_array_mac] = MACskeletonize(img);
+                toc
+            end
             %% build MEC skeleton
-            
-            % Tested using enhance; did not improve results. 
-            %ima = adapthisteq(image);
-            %image = enhance_finger(current_source_img);
-            image = imresize(im2double(current_source_img), 0.5);
-            %image = current_source_img;
-            
-            mask_height=4; % Height of the mask
-            mask_width=20; % Width of the mask
-            [fvr, edges] = lee_region(image,mask_height,mask_width);
-            x = 1: 1 : length(edges(2,:));
-
-            [m,n] = size(image);
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(1,c)
-                       image(1:r-1,c) = 0; 
-                       break
-                    end
-                end
+            if MEC_SKEL
+                tic
+                img_mec_skeleton = MECskeletonize(img);
+                toc
             end
-
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(2,c)
-                       image(r:m,c) = 0; 
-                       break
-                    end
-                end
-            end
-            
-            % gaussian filter
-
-            S= im2double(image);
-
-            sigma = 3.2;
-            L = 2*ceil(sigma*3)+1;
-            h = fspecial('gaussian', L, sigma);% create the PSF
-            imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
-
-            S = imfiltered;%mat2gray(imfiltered, [0 256]);
-
-
-            % if no resize, gaussian will add random noise to black areas so run this again.
-            % mask_height=4; % Height of the mask
-            % mask_width=20; % Width of the mask
-            % [fvr, edges] = lee_region(image,mask_height,mask_width);
-            % x = 1: 1 : length(edges(2,:));
-            % 
-            % [m,n] = size(S);
-            % 
-            % for c = 1 : n
-            %     for r = 1 : m
-            %         if r > edges(1,c)
-            %            S(1:r-1,c) = 0; 
-            %            break
-            %         end
-            %     end
-            % end
-            % 
-            % for c = 1 : n
-            %     for r = 1 : m
-            %         if r > edges(2,c)
-            %            S(r:m,c) = 0; 
-            %            break
-            %         end
-            %     end
-            % end
-  
-
-            % Mean curvature method
-
-            v_mean_curvature = mean_curvature(S);
-
-            % Binarise the vein image
-            md = 0.01;
-            img_mec_bin = v_mean_curvature > md; 
-
-
-            bw1 = filledgegaps(img_mec_bin, 7);
-            img_mec_skeleton  = bwareaopen(bw1,10);
-
-            
-            
             %% find LBP features
-            
-            lbp_info = createLBPofSkel(imout_hallo, branch_array_mac);
-            %lbp_info = createLBPofSkel(img_enhanced_rl, branch_array_rl);
-            
+            if LBP_EN
+                tic
+                lbp_info = createLBPofSkel(current_source_img, branch_array_mac);
+                toc
+            end
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
             data{db_counter,2} = person;                   % person number
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
-            data{db_counter,5} = img_rl_bin;               % RL binary
-            data{db_counter,6} = img_mac_bin;              % MAC binary   
-            data{db_counter,7} = img_mec_bin;             % MEC binary
-            data{db_counter,8} = branch_array_rl;          % branchpoint array RL
-            data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
-            %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
-            data{db_counter,11} = lbp_info;                % local binary pattern
-            data{db_counter,12} = v_max_curvature;                %TESTTTT
-            
 
+            % (5) RL_SKEL
+            % (6) MAC_SKEL
+            % (7) MEC_SKEL
+            % (8) RL_branch array
+            % (9) MAC branch array
+            % (10) MEC branch array
+            % (11) LBP info
+            
+            if RL_SKEL
+                data{db_counter,5} = img_rl_bin;               % RL binary
+                data{db_counter,8} = branch_array_rl;          % branchpoint array RL
+            end
+            
+            if MAC_SKEL
+                data{db_counter,6} = img_mac_bin;              % MAC binary
+                data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
+            end
+            
+            if MEC_SKEL
+                data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
+%                 data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
+            end
+            
+            if LBP_EN
+                data{db_counter,11} = lbp_info;                % local binary pattern
+            end
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             %fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
