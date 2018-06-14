@@ -19,10 +19,10 @@ for person = 1:PERSON_COUNT
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
-            %% build RL skeleton
-            
             % enhance image (contrast)
             img = enhance_finger(im2double(current_source_img));
+            
+            %% build RL skeleton
             img_enhanced_rl = img;
             
             % variables for Gaussian filter
@@ -113,10 +113,10 @@ for person = 1:PERSON_COUNT
             %% build MAC skeleton
             
             % TODO evaluate difference between enhance and not enhance in report
-            img_mac = enhance_finger(im2double(current_source_img));
+%             img_mac = enhance_finger(im2double(current_source_img));
             %img_mac = imresize(img_rl, 0.5);
             
-            img_enhanced_mac = img_mac;
+            img_enhanced_mac = img;
             
             % find Lee regions (finger region)
             fvr = lee_region(img_mac,4,40);
