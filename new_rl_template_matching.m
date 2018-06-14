@@ -186,7 +186,7 @@ for iteration = 1:2
     
     if SHOW_FIGURES == true
         figure;
-        imshow(img_rl_result); hold all;
+        imshow(test_img); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
         title('skeletonized + branchpoints');
     end

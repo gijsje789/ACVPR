@@ -2,8 +2,8 @@ function histPerPoint = createLBPofSkel(skel, branch_array)
 window_size = 20;
     for it = 1:size(branch_array,1)
        if branch_array(it,1)-window_size > 0 && branch_array(it,2)-window_size > 0 ...
-               && branch_array(it,1)+window_size <= size(skel,1) ...
-               && branch_array(it,2)+window_size <= size(skel,2)
+               && branch_array(it,1)+window_size <= size(skel,2) ...
+               && branch_array(it,2)+window_size <= size(skel,1)
            % extract the lbp information as if it was an image. Each point
            % is an rotation variant lbp pattern.
            lbp_img = LBP(skel(branch_array(it,2)-window_size:branch_array(it,2)+window_size,...
@@ -23,7 +23,7 @@ window_size = 20;
            end
            histPerPoint(it,:) = histogramCreator(lbp_img2);
        else
-           histPerPoint(it,:) = zeros(1,255);
+           histPerPoint(it,:) = zeros(1,256);
        end
     end
 end
