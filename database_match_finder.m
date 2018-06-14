@@ -66,7 +66,7 @@ save('result_matches.mat','matches_array');
 
 % calculate EER, print result and show graph, 
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
-EER = calculate_EER(matches_array);
+[EER, EERthreshold] = calculate_EER(matches_array);
 fprintf('EER: %.2f %%\n',EER);
 
 
