@@ -57,23 +57,23 @@ for person = 1:PERSON_COUNT
             %fvr = ones(size(im));
             veins = repeated_line(img_gauss, fvr, 3000, 1, 17);
             
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(1,c)
-                        veins(1:r,c) = 0;
-                        break
-                    end
-                end
-            end
-            
-            for c = 1 : n
-                for r = 1 : m
-                    if r > edges(2,c)
-                        veins(r-1:m,c) = 0;
-                        break
-                    end
-                end
-            end
+%             for c = 1 : n
+%                 for r = 1 : m
+%                     if r > edges(1,c)
+%                         veins(1:r,c) = 0;
+%                         break
+%                     end
+%                 end
+%             end
+%             
+%             for c = 1 : n
+%                 for r = 1 : m
+%                     if r > edges(2,c)
+%                         veins(r-1:m,c) = 0;
+%                         break
+%                     end
+%                 end
+%             end
             
             % binarize the vein image
             md = median(veins(veins>0));
@@ -119,10 +119,10 @@ for person = 1:PERSON_COUNT
             img_enhanced_mac = img;
             
             % find Lee regions (finger region)
-            fvr = lee_region(img_mac,4,40);
+            fvr = lee_region(img,4,40);
             
             % extract veins using maximum curvature method
-            v_max_curvature = miura_max_curvature(img_mac,fvr,3);
+            v_max_curvature = miura_max_curvature(img,fvr,3);
             
             % binarize the vein image
             md = median(v_max_curvature(v_max_curvature>0));

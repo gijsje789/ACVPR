@@ -5,7 +5,7 @@ clc; clear; close all;
 m_counter = 1;
 
 % load database
-load 'database - 24x24 met LBP.mat';
+load 'database.mat';
 [data_count, ~] = size(data);
 
 % empty matches array
@@ -43,11 +43,12 @@ for compare = 1:data_count
         
         %% ================== select matching method =============================
         %full_match_percentage = lbp_matching(lbp_info, lbp_info_reference);
-        %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
-%         full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+        full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin); %6%
+%         full_match_percentage = template_matching(img_mac_bin_reference,
+%         img_mac_bin); %enhanced 2% anders rond 0%
 %         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
-        [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
-        full_match_percentage = sum(full_match_percentage);
+%         [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
+%         full_match_percentage = sum(full_match_percentage);
 %         if error > temp
 %             temp = error;
 %         end
