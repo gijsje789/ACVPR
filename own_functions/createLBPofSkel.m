@@ -1,5 +1,5 @@
 function histPerPoint = createLBPofSkel(skel, branch_array)
-window_size = 20;
+window_size = 3;
     for it = 1:size(branch_array,1)
        if branch_array(it,1)-window_size > 0 && branch_array(it,2)-window_size > 0 ...
                && branch_array(it,1)+window_size <= size(skel,2) ...
