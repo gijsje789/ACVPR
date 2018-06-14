@@ -5,12 +5,13 @@ clc; clear; close all;
 m_counter = 1;
 
 % load database
-load database.mat;
+load 'database - 24x24 met LBP.mat';
 [data_count, ~] = size(data);
 
 % empty matches array
 matches_array = zeros(data_count,data_count);
 
+        temp = 0;
 for compare = 1:data_count
     % read all data for first database entry
     current_source_img_reference = data{compare,1};          % cropped finger image
@@ -41,11 +42,15 @@ for compare = 1:data_count
         lbp_info = data{compare_with,11};                   % local binary pattern
         
         %% ================== select matching method =============================
-        
         %full_match_percentage = lbp_matching(lbp_info, lbp_info_reference);
         %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
-        full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
-        
+%         full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+%         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
+        [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
+        full_match_percentage = sum(full_match_percentage);
+%         if error > temp
+%             temp = error;
+%         end
         %% ================= end select matching method ==========================
         
         % report matching status
