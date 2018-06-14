@@ -28,17 +28,17 @@ for person = 1:PERSON_COUNT
             % variables for Gaussian filter
             sigma = 4; L = 2*ceil(sigma*3)+1;
             h = fspecial('gaussian', L, sigma);
-            img = imfilter(img, h, 'replicate', 'conv');
+            img_gauss = imfilter(img, h, 'replicate', 'conv');
             
             mask_height = 4; mask_width = 20;
-            [fvr, edges] = lee_region(img,mask_height,mask_width);
+            [fvr, edges] = lee_region(img_gauss,mask_height,mask_width);
             
             [m,n] = size(img);
             
             for c = 1 : n
                 for r = 1 : m
                     if r > edges(1,c)
-                        img(1:r-1,c) = 0;
+                        img_gauss(1:r-1,c) = 0;
                         break
                     end
                 end
@@ -47,7 +47,7 @@ for person = 1:PERSON_COUNT
             for c = 1 : n
                 for r = 1 : m
                     if r > edges(2,c)
-                        img(r:m,c) = 0;
+                        img_gauss(r:m,c) = 0;
                         break
                     end
                 end
@@ -55,7 +55,7 @@ for person = 1:PERSON_COUNT
             
             % repeated lines method
             %fvr = ones(size(im));
-            veins = repeated_line(img, fvr, 3000, 1, 17);
+            veins = repeated_line(img_gauss, fvr, 3000, 1, 17);
             
             for c = 1 : n
                 for r = 1 : m
