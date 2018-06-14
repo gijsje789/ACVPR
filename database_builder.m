@@ -116,8 +116,8 @@ for person = 1:PERSON_COUNT
             %% build MAC skeleton
             
             % TODO evaluate difference between enhance and not enhance in report
-            img_mac = enhance_finger(im2double(current_source_img));
-            %img_mac = imresize(img_rl, 0.5);
+            %img_mac = enhance_finger(im2double(current_source_img));
+            img_mac = imresize(im2double(current_source_img), 0.5);
             
             img_enhanced_mac = img_mac;
             
@@ -239,13 +239,15 @@ for person = 1:PERSON_COUNT
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
             data{db_counter,5} = img_rl_bin;               % RL binary
-            data{db_counter,6} = img_mac_bin;              % MAC binary
+            data{db_counter,6} = img_mac_bin;              % MAC binary   
             data{db_counter,7} = img_mec_bin;             % MEC binary
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
             data{db_counter,11} = lbp_info;                % local binary pattern
+            data{db_counter,12} = v_max_curvature;                %TESTTTT
             
+
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
             %fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);

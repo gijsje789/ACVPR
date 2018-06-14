@@ -113,8 +113,6 @@ for iteration = 1:2
         title('cleaned filled');
     end
     
-    
-    
     % skeletonize first time
     img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
     
