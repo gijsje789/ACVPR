@@ -9,10 +9,10 @@ imageSet = read_imageSet('0001','0060');
 PERSON_COUNT = 2;          % max 60
 FINGER_COUNT = 6;          % max 6
 FINGER_PHOTO_COUNT = 4;    % max 4
-RL_SKEL = true;            % Enable repeated line tracking
-MAC_SKEL = true;           % Enable MAC
-MEC_SKEL = true;           % Enable MEC
-LBP_EN = true;             % Enable LBP
+RL_SKEL = true;            % Enable RL (repeated line tracking)
+MAC_SKEL = true;           % Enable MAC (maximum curvature)
+MEC_SKEL = true;           % Enable MEC (mean curvature)
+LBP_EN = true;             % Enable LBP (local binary pattern)
 
 
 for person = 1:PERSON_COUNT
@@ -24,7 +24,7 @@ for person = 1:PERSON_COUNT
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
-            % enhance image (contrast)
+            % resize image for speed purposes
             img = imresize(im2double(current_source_img), 0.5);
             
             %% build RL skeleton
@@ -33,11 +33,11 @@ for person = 1:PERSON_COUNT
             end
             %% build MAC skeleton
             if MAC_SKEL
-                [img_mac_bin, branch_array_mac] = MACskeletonize(img);
+                [img_mac_bin, branch_array_mac, max_curvature_gray] = MACskeletonize(img);
             end
             %% build MEC skeleton
             if MEC_SKEL
-                img_mec_skeleton = MECskeletonize(img);
+                [img_mec_skeleton, branch_array_mec] = MECskeletonize(img);
             end
             %% find LBP features
             if LBP_EN
@@ -65,11 +65,12 @@ for person = 1:PERSON_COUNT
             if MAC_SKEL
                 data{db_counter,6} = img_mac_bin;              % MAC binary
                 data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
+                data{db_counter,12} = max_curvature_gray;      % grayscale of veins
             end
             
             if MEC_SKEL
                 data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
-%                 data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
+                data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
             end
             
             if LBP_EN

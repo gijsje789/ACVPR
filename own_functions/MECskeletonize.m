@@ -1,4 +1,4 @@
-function img_mec_skeleton = MECskeletonize(img)
+function [img_mec_skeleton, branch_array_mec] = MECskeletonize(img)
 
     mask_height=4; % Height of the mask
     mask_width=20; % Width of the mask
@@ -28,5 +28,10 @@ function img_mec_skeleton = MECskeletonize(img)
 
     bw1 = filledgegaps(img_mec_bin, 7);
     img_mec_skeleton  = bwareaopen(bw1,10);
-
+    
+    % find branchpoints remaining and put in array
+    bw1br = bwmorph(img_mec_skeleton, 'branchpoints');
+    [i,j] = find(bw1br);
+    branch_array_mec = [j,i];
+    
 end
