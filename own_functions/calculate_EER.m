@@ -1,4 +1,4 @@
-function EER = calculate_EER(matches_array)
+function [EER, EERthreshold] = calculate_EER(matches_array)
 % Biometric security system algorithm used to predetermine the threshold 
 % values for its false acceptance rate and its false rejection rate. 
 % When the rates are equal, the common value is referred to as the 
@@ -6,11 +6,16 @@ function EER = calculate_EER(matches_array)
 % acceptances is equal to the proportion of false rejections. 
 % The lower this value, the higher the accuracy of the biometric system.
 
+% Note -- Because our FFR is discrete in most cases, thus not a perfect
+% parabola, the EER is calculated as the minimum of the sum of the FAR and
+% the FFR, instead of the intersecting points.
+
 % Parameters:
 %  matches_array     -    n x n array containing match percentages
 
 % Returns:
 %  EER               -    Equal Error Rate
+%  EERthreshold      -    Corresponding threshold
 
 [data_count, ~] = size(matches_array);
 FRR = [];
@@ -57,7 +62,9 @@ end
 [~, minind] = min(Fadd);
 minval = Fadd(minind(2),:);
 
+% return EER and corresponding threshold
 EER = minval(2)/2;
+EERthreshold = minval(1);
 
 % plotting figure
 figure;
