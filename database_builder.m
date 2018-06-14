@@ -6,11 +6,11 @@ db_counter = 1;
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
-PERSON_COUNT = 2;              % max 60
-FINGER_COUNT = 6;               % max 6
-FINGER_PHOTO_COUNT = 4;         % max 4
+PERSON_COUNT = 2;          % max 60
+FINGER_COUNT = 6;          % max 6
+FINGER_PHOTO_COUNT = 4;    % max 4
 RL_SKEL = true;            % Enable repeated line tracking
-MAC_SKEL = true;            % Enable MAC
+MAC_SKEL = true;           % Enable MAC
 MEC_SKEL = true;           % Enable MEC
 LBP_EN = true;             % Enable LBP
 
@@ -29,28 +29,19 @@ for person = 1:PERSON_COUNT
             
             %% build RL skeleton
             if RL_SKEL
-                tic
                 [img_rl_bin, branch_array_rl] = RLskeletonize(img);
-                toc
             end
-            
             %% build MAC skeleton
             if MAC_SKEL
-                tic
                 [img_mac_bin, branch_array_mac] = MACskeletonize(img);
-                toc
             end
             %% build MEC skeleton
             if MEC_SKEL
-                tic
                 img_mec_skeleton = MECskeletonize(img);
-                toc
             end
             %% find LBP features
             if LBP_EN
-                tic
                 lbp_info = createLBPofSkel(current_source_img, branch_array_mac);
-                toc
             end
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
@@ -84,9 +75,9 @@ for person = 1:PERSON_COUNT
             if LBP_EN
                 data{db_counter,11} = lbp_info;                % local binary pattern
             end
+            
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
-            %fprintf('%d/%d: done with person %d finger %d number %d\n',db_counter,total,person,finger,number);
             fprintf('DATABASE: %d/%d\n',db_counter,total);
             db_counter = db_counter + 1;
             
