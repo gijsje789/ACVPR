@@ -10,7 +10,7 @@ PERSON_COUNT = 60;          % max 60
 FINGER_COUNT = 6;          % max 6
 FINGER_PHOTO_COUNT = 4;    % max 4
 RL_SKEL = true;            % Enable RL (repeated line tracking)
-MAC_SKEL = true;           % Enable MAC (maximum curvature)
+MAC_SKEL_LBP = true;       % Enable MAC (maximum curvature) and LBP (local binary pattern)
 MEC_SKEL = true;           % Enable MEC (mean curvature)
 LBP_EN = true;             % Enable LBP (local binary pattern)
 
@@ -36,16 +36,12 @@ for person = 1:PERSON_COUNT
                 [img_rl_bin, branch_array_rl] = RLskeletonize(img);
             end
             %% build MAC skeleton
-            if MAC_SKEL
+            if MAC_SKEL_LBP
                 [img_mac_bin, branch_array_mac, max_curvature_gray] = MACskeletonize(img);
             end
             %% build MEC skeleton
             if MEC_SKEL
                 [img_mec_skeleton, branch_array_mec] = MECskeletonize(img);
-            end
-            %% find LBP features
-            if LBP_EN
-                lbp_info = createLBPofSkel(current_source_img, branch_array_mac);
             end
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
@@ -57,30 +53,26 @@ for person = 1:PERSON_COUNT
             % (6) MAC_SKEL
             % (7) MEC_SKEL
             % (8) RL_branch array
-            % (9) MAC branch array
-            % (10) MEC branch array
-            % (11) LBP info
-            % (12) MAC grayscale for LBP
+            % (9) MAC_branch array
+            % (10) MEC_branch array
+            % (11) MAC grayscale for LBP (MAC_SKEL_LBP)
             
             if RL_SKEL
                 data{db_counter,5} = img_rl_bin;               % RL binary
                 data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             end
             
-            if MAC_SKEL
+            if MAC_SKEL_LBP
                 data{db_counter,6} = img_mac_bin;              % MAC binary
                 data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
-                data{db_counter,12} = max_curvature_gray;      % grayscale of veins
+                data{db_counter,11} = max_curvature_gray;      % grayscale of veins
             end
             
             if MEC_SKEL
                 data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
                 data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
             end
-            
-            if LBP_EN
-                data{db_counter,11} = lbp_info;                % local binary pattern
-            end
+
             
             %% print progress
             fprintf('DATABASE: %d/%d\n',db_counter,total);

@@ -28,8 +28,7 @@ for compare = 1:data_count
     branch_array_rl_reference = data{compare,8};             % branchpoint array RL
     branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
     branch_array_mec_reference = data{compare,10};           % branchpoint array MEC
-    lbp_info_reference = data{compare,11};                   % local binary pattern
-    img_mac_gray_reference = data{compare,12};               % gray MAC image for LBP
+    img_mac_gray_reference = data{compare,11};               % gray MAC image for LBP
     
     for compare_with = 1:data_count
         
@@ -44,8 +43,7 @@ for compare = 1:data_count
         branch_array_rl = data{compare_with,8};             % branchpoint array RL
         branch_array_mac = data{compare_with,9};            % branchpoint array MAC
         branch_array_mec = data{compare_with,10};           % branchpoint array MEC
-        lbp_info = data{compare_with,11};                   % local binary pattern
-        img_mac_gray = data{compare_with,12};               % gray MAC image for LBP
+        img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
         
         % matching method specific actions
         if strcmp(test_method,'RL')
