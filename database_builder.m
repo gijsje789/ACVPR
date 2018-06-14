@@ -94,7 +94,7 @@ for person = 1:PERSON_COUNT
     end
 end
 
-% delete previous database
+% delete previous database if applicable
 db_file = fullfile(cd, 'database.mat');
 delete(db_file);
 
