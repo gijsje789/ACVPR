@@ -1,17 +1,21 @@
-% input two images, and compare for similarity
+% ACVPR finger vein verification
 clc; clear; close all;
 
-% intialize counter 
-m_counter = 1;
+% test_method = 'RL';
+% test_method = 'MAC';
+% test_method = 'MEC';
+test_method = 'LBP';
 
 % load database
-load 'database - 24x24 met LBP.mat';
+load 'database.mat';
 [data_count, ~] = size(data);
 
 % empty matches array
 matches_array = zeros(data_count,data_count);
 
-        temp = 0;
+% intialize counter
+m_counter = 1;
+
 for compare = 1:data_count
     % read all data for first database entry
     current_source_img_reference = data{compare,1};          % cropped finger image
@@ -25,6 +29,7 @@ for compare = 1:data_count
     branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
     %branch_array_mec_reference = data{compare,10};         % branchpoint array MEC
     lbp_info_reference = data{compare,11};                   % local binary pattern
+    img_mac_gray_reference = data{compare,12};                   % local binary pattern
     
     for compare_with = 1:data_count
         
@@ -40,17 +45,26 @@ for compare = 1:data_count
         branch_array_mac = data{compare_with,9};            % branchpoint array MAC
         %branch_array_mec = data{compare_with,10};           % branchpoint array MEC
         lbp_info = data{compare_with,11};                   % local binary pattern
+        img_mac_gray = data{compare_with,12};                   % local binary pattern
         
         %% ================== select matching method =============================
-        %full_match_percentage = lbp_matching(lbp_info, lbp_info_reference);
-        %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
-         full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
-%         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
-%        [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
-%        full_match_percentage = sum(full_match_percentage);
-%         if error > temp
-%             temp = error;
-%         end
+        
+        
+        if strcmp(test_method,'RL')
+            full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
+        elseif strcmp(test_method,'MAC')
+            full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+        elseif strcmp(test_method,'MEC')
+            % TODO
+        elseif strcmp(test_method,'LBP')
+            error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
+        else
+            fprintf('invalid test method. Use RL, MAC, MEC or LBP');
+        end
+        
+        
+        
+        
         %% ================= end select matching method ==========================
         
         % report matching status
@@ -58,21 +72,27 @@ for compare = 1:data_count
         fprintf('MATCHING: %d/%d\n',m_counter,total);
         m_counter = m_counter + 1;
         
-         % round percentage
-        %full_match_percentage = round(full_match_percentage);
-        %full_match_percentage = round(full_match_percentage,2);
-        
         % save result to matches array
-        matches_array(compare, compare_with) = full_match_percentage;
+        %matches_array(compare, compare_with) = full_match_percentage;
+        if error ~= -1
+            matches_array(compare,compare_with) = error;
+        end
     end
 end
+
+min = min(min(matches_array));
+max = max(max(matches_array));
+matches_array = 100-(matches_array./(max-min).*100);
 
 % save to file
 save('result_matches.mat','matches_array');
 
-% calculate EER, print result and show graph, 
+% calculate EER, print result and show graph,
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
 [EER, EERthreshold] = calculate_EER(matches_array);
 fprintf('EER: %.2f %%\n',EER);
+
+
+
 
 
