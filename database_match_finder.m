@@ -24,10 +24,10 @@ for compare = 1:data_count
     number_reference = data{compare,4};                      % photo number
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
-    %img_mec_skeleton_reference = data{compare,7};          % MEC skeletonized
+    img_mec_skeleton_reference = data{compare,7};          % MEC skeletonized
     branch_array_rl_reference = data{compare,8};             % branchpoint array RL
     branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
-    %branch_array_mec_reference = data{compare,10};         % branchpoint array MEC
+    branch_array_mec_reference = data{compare,10};         % branchpoint array MEC
     lbp_info_reference = data{compare,11};                   % local binary pattern
     img_mac_gray_reference = data{compare,12};                   % local binary pattern
     
@@ -40,14 +40,15 @@ for compare = 1:data_count
         number = data{compare_with,4};                      % photo number
         img_rl_bin = data{compare_with,5};                  % RL binary
         img_mac_bin = data{compare_with,6};                 % MAC binary
-        %img_mec_skeleton = data{compare_with,7};            % MEC skeletonized
+        img_mec_skeleton = data{compare_with,7};            % MEC skeletonized
         branch_array_rl = data{compare_with,8};             % branchpoint array RL
         branch_array_mac = data{compare_with,9};            % branchpoint array MAC
-        %branch_array_mec = data{compare_with,10};           % branchpoint array MEC
+        branch_array_mec = data{compare_with,10};           % branchpoint array MEC
         lbp_info = data{compare_with,11};                   % local binary pattern
         img_mac_gray = data{compare_with,12};                   % local binary pattern
         
         %% ================== select matching method =============================
+<<<<<<< HEAD
         
         
         if strcmp(test_method,'RL')
@@ -65,6 +66,17 @@ for compare = 1:data_count
         
         
         
+=======
+        %full_match_percentage = lbp_matching(lbp_info, lbp_info_reference);
+%         full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin); %6%
+        full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin); %enhanced 2% anders rond 0%
+%         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
+%         [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
+%         full_match_percentage = sum(full_match_percentage);
+%         if error > temp
+%             temp = error;
+%         end
+>>>>>>> cdb7d2675917b352412a2b92a26a94d5ac0b5241
         %% ================= end select matching method ==========================
         
         % report matching status
