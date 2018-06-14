@@ -81,8 +81,9 @@ if strcmp(test_method,'LBP')
     matches_array = 100-(matches_array./max.*100);
 end
 
-% save to file
-save('result_matches.mat','matches_array');
+% save to matrix file and excel file
+%save('vein_matching_results.mat','matches_array');
+xlswrite('vein_matching_results',matches_array); 
 
 % calculate EER, print result and show EER graph
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
