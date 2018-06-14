@@ -19,6 +19,9 @@ for person = 1:PERSON_COUNT
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
+            % TEST
+            imout_hallo = imresize(current_source_img, 0.5);
+            
             %% build RL skeleton
             
             % enhance image (contrast)
@@ -143,7 +146,7 @@ for person = 1:PERSON_COUNT
             
             %% find LBP features
             
-            lbp_info = createLBPofSkel(img_enhanced_mac, branch_array_mac);
+            lbp_info = createLBPofSkel(imout_hallo, branch_array_mac);
             %lbp_info = createLBPofSkel(img_enhanced_rl, branch_array_rl);
             
             %% fill database entry

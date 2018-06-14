@@ -45,9 +45,9 @@ for compare = 1:data_count
         %full_match_percentage = lbp_matching(lbp_info, lbp_info_reference);
         %full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
 %         full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
-%         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
-        [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
-        full_match_percentage = sum(full_match_percentage);
+         [~, error, ~, full_match_percentage] = matchLBPfeatures(lbp_info, lbp_info_reference);
+%        [index, full_match_percentage] = matchFeatures(lbp_info, lbp_info_reference);
+%        full_match_percentage = sum(full_match_percentage);
 %         if error > temp
 %             temp = error;
 %         end

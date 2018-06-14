@@ -4,7 +4,7 @@ clc; clear; close all;
 SHOW_FIGURES = true;
 
 % load database
-load database.mat;
+load 'database - 24x24 met LBP.mat';
 [data_count, ~] = size(data);
 
 % read comparison image
@@ -113,6 +113,8 @@ for iteration = 1:2
         title('cleaned filled');
     end
     
+    
+    
     % skeletonize first time
     img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
     
@@ -186,7 +188,7 @@ for iteration = 1:2
     
     if SHOW_FIGURES == true
         figure;
-        imshow(test_img); hold all;
+        imshow(img_rl_result); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
         title('skeletonized + branchpoints');
     end
