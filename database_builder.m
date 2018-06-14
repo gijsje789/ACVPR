@@ -6,7 +6,7 @@ db_counter = 1;
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
-PERSON_COUNT = 10;              % max 60
+PERSON_COUNT = 2;              % max 60
 FINGER_COUNT = 6;               % max 6
 FINGER_PHOTO_COUNT = 4;         % max 4
 
@@ -23,6 +23,7 @@ for person = 1:PERSON_COUNT
             
             % enhance image (contrast)
             img = enhance_finger(im2double(current_source_img));
+            img_enhanced_rl = img;
             
             % variables for Gaussian filter
             sigma = 4; L = 2*ceil(sigma*3)+1;
@@ -115,6 +116,8 @@ for person = 1:PERSON_COUNT
             img_mac = enhance_finger(im2double(current_source_img));
             %img_mac = imresize(img_rl, 0.5);
             
+            img_enhanced_mac = img_mac;
+            
             % find Lee regions (finger region)
             fvr = lee_region(img_mac,4,40);
             
@@ -140,8 +143,8 @@ for person = 1:PERSON_COUNT
             
             %% find LBP features
             
-            lbp_info = createLBPofSkel(img_mac_skeleton, branch_array_mac);
-            %lbp_info = createLBPofSkel(img_rl_skeleton, branch_array_rl);
+            lbp_info = createLBPofSkel(img_enhanced_mac, branch_array_mac);
+            %lbp_info = createLBPofSkel(img_enhanced_rl, branch_array_rl);
             
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
@@ -154,7 +157,7 @@ for person = 1:PERSON_COUNT
             data{db_counter,8} = branch_array_rl;          % branchpoint array RL
             data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
             %data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
-            %data{db_counter,11} = lbp_info;                % local binary pattern
+            data{db_counter,11} = lbp_info;                % local binary pattern
             
             %% print progress
             total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
