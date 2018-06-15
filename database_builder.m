@@ -6,7 +6,7 @@ db_counter = 1;
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
-PERSON_COUNT = 60;          % max 60
+PERSON_COUNT = 2;          % max 60
 FINGER_COUNT = 6;          % max 6
 FINGER_PHOTO_COUNT = 4;    % max 4
 RL_SKEL = true;            % Enable RL (repeated line tracking)
