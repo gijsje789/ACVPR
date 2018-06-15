@@ -16,7 +16,7 @@ MEC_SKEL = true;           % Enable MEC (mean curvature)
 % calculate total iterations
 total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
 % initialize array for speed
-data{total,12} = [];
+data{total,11} = [];
 
 for person = 1:PERSON_COUNT
     

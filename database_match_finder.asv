@@ -77,16 +77,16 @@ end
 
 % for LBP find range and fill matches array
 if strcmp(test_method,'LBP')
-    max = mean(median(matches_array));
-    matches_array(matches_array > max) = max;
+    max = max(max(matches_array));
     matches_array = 100-(matches_array./max.*100);
 end
 
 % save to matrix file and excel file
-save('vein_matching_results.mat','matches_array');
+%save('vein_matching_results.mat','matches_array');
 xlswrite('vein_matching_results.xls',matches_array); 
 
 % calculate EER, print result and show EER graph
+% DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER
 [EER, EERthreshold] = calculate_EER(matches_array);
 fprintf('EER = %.2f%% (OPTIMAL THRESHOLD = %.2f%%)\n',EER, EERthreshold);
 
