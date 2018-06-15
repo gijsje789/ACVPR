@@ -6,43 +6,49 @@ test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
+[file,path] = uigetfile;
+
+
+fprintf('Loading database...\n');
+
 % load database
 load 'database - full.mat';
 [data_count, ~] = size(data);
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
+fprintf('Initializing...\n');
+
 % intialize progress counter
 m_counter = 1;
 
 % TODO change to input image
-person = 1;
-finger = 1;
-number = 1;
+person = 10;             % max 60
+finger = 2;              % max 6
+number = 4;              % max 4
 
-RL_THRESHOLD = 0;
+RL_THRESHOLD = 90;
 MAC_THRESHOLD = 7.6;
-MEC_THRESHOLD = 0;
-LBP_THRESHOLD = 0;
+MEC_THRESHOLD = 90;
+LBP_THRESHOLD = 1;
 
 %% input image to database data
 % read current image
-current_source_img = get_fingerImage(imageSet, person, finger, number);
+current_source_img_ref = get_fingerImage(imageSet, person, finger, number);
 
 % resize image for speed purposes (50%)
-img = imresize(im2double(current_source_img), 0.5);
+img_ref = imresize(im2double(current_source_img_ref), 0.5);
 
 % build RL skeleton
-[img_rl_bin, branch_array_rl] = RLskeletonize(img);
+[img_rl_bin_ref, branch_array_rl_ref] = RLskeletonize(img_ref);
 
 % build MAC skeleton
-[img_mac_bin, branch_array_mac, max_curvature_gray] = MACskeletonize(img);
+[img_mac_bin_ref, branch_array_mac_ref, max_curvature_gray_ref] = MACskeletonize(img_ref);
 
 % build MEC skeleton
-[img_mec_skeleton, branch_array_mec] = MECskeletonize(img);
+[img_mec_skeleton_ref, branch_array_mec_ref] = MECskeletonize(img_ref);
 
 %% match with other database entries
-
 for compare_with = 1:data_count
     
     % read all data for first database entry
@@ -58,41 +64,46 @@ for compare_with = 1:data_count
     branch_array_mec = data{compare_with,10};           % branchpoint array MEC
     img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
     
-    % matching method specific actions
-    if strcmp(test_method,'RL')
-        full_match_percentage = template_matching(img_rl_bin, img_rl_bin);
-    elseif strcmp(test_method,'MAC')
-        full_match_percentage = template_matching(img_mac_bin, img_mac_bin);
-    elseif strcmp(test_method,'MEC')
-        full_match_percentage = template_matching(img_mec_skeleton, img_mec_bin);
-    elseif strcmp(test_method,'LBP')
-        error = lbp_matching(max_curvature_gray, img_mac_gray, img_mac_bin, img_mac_bin);
-    else
-        fprintf('invalid test method. Use RL, MAC, MEC or LBP');
-    end
-
     % report matching status
-    total = data_count^2;
-    fprintf('MATCHING: %d/%d = ',m_counter,total);
+    total = data_count;
+    fprintf('Matching: %d/%d = ',m_counter,total);
     m_counter = m_counter + 1;
     
-    if strcmp(test_method,'RL') || strcmp(test_method,'MAC') || strcmp(test_method,'MEC')
-        fprintf('%.2f%% MATCH\n',full_match_percentage);
+    % matching method specific match calculator
+    if strcmp(test_method,'RL')
+        full_match_percentage = template_matching(img_rl_bin_ref, img_rl_bin);
+        fprintf('%.2f%%\n',full_match_percentage);
+        if full_match_percentage > RL_THRESHOLD
+            figure; imshow(current_source_img);
+            title(strcat('RL: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+        end
+    elseif strcmp(test_method,'MAC')
+        full_match_percentage = template_matching(img_mac_bin_ref, img_mac_bin);
+        fprintf('%.2f%%\n',full_match_percentage);
+        if full_match_percentage > MAC_THRESHOLD
+            figure; imshow(current_source_img);
+            title(strcat('MAC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+        end
+    elseif strcmp(test_method,'MEC')
+        full_match_percentage = template_matching(img_mec_skeleton_ref, img_mec_bin);
+        fprintf('%.2f%%\n',full_match_percentage);
+        if full_match_percentage > MEC_THRESHOLD
+            figure; imshow(current_source_img);
+            title(strcat('MEC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+        end
     elseif strcmp(test_method,'LBP')
+        error = lbp_matching(max_curvature_gray_ref, img_mac_gray, img_mac_bin_ref, img_mac_bin);
         if error ~= -1
-            fprintf('%.2f ERROR\n',error);
+            fprintf('%.2f\n',error);
         else
-            fprintf('0%% MATCH\n');
+            fprintf('0\n');
+        end
+        if error < LBP_THRESHOLD
+            figure; imshow(current_source_img);
+            title('person %d finger %d photo %d match: %.2f%%',person,finger,number,error);
         end
     else
-        fprintf('SELECT METHOD\n');
-    end
-    
-    
-    if strcmp(test_method,'RL')
-    elseif strcmp(test_method,'RL')
-            elseif strcmp(test_method,'RL')
-                elseif strcmp(test_method,'RL')
+        fprintf('invalid test method. Use RL, MAC, MEC or LBP');
     end
     
 end

@@ -84,7 +84,7 @@ end
 
 % save to matrix file and excel file
 save('vein_matching_results.mat','matches_array');
-xlswrite('vein_matching_results.xls',matches_array); 
+%xlswrite('vein_matching_results.xls',matches_array); 
 
 % calculate EER, print result and show EER graph
 [EER, EERthreshold] = calculate_EER(matches_array);
