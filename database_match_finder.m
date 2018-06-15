@@ -81,7 +81,7 @@ end
 
 % save to matrix file and excel file
 %save('vein_matching_results.mat','matches_array');
-xlswrite('vein_matching_results',matches_array); 
+xlswrite('vein_matching_results.xls',matches_array); 
 
 % calculate EER, print result and show EER graph
 % DO NOT ROUND "FULL MATCH PERCENTAGE" FOR ACCURATE EER

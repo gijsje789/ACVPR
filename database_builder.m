@@ -12,7 +12,6 @@ FINGER_PHOTO_COUNT = 4;    % max 4
 RL_SKEL = true;            % Enable RL (repeated line tracking)
 MAC_SKEL_LBP = true;       % Enable MAC (maximum curvature) and LBP (local binary pattern)
 MEC_SKEL = true;           % Enable MEC (mean curvature)
-LBP_EN = true;             % Enable LBP (local binary pattern)
 
 % calculate total iterations
 total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
