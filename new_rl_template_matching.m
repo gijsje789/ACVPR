@@ -3,8 +3,8 @@ clc; clear; close all;
 
 SHOW_FIGURES = true;
 
-% load database
-load 'database - full.mat';
+ load database
+%load 'database - full.mat';
 [data_count, ~] = size(data);
 
 
@@ -94,9 +94,12 @@ for iteration = 1:2
         end
     end
     
+     veins = veins*-1;
+    
     if SHOW_FIGURES == true
         figure;
-        imshow(veins,[0 150]);
+        imshow(veins,[-150 0]);
+        axis off;
         %title('RL veins');
     end
     
@@ -195,11 +198,13 @@ for iteration = 1:2
     bw1br = bwmorph(img_rl_result, 'branchpoints');
     [i,j] = find(bw1br);
     branch_array = [j,i];
+    img_rl_result = img_rl_result*-1;
     
     if SHOW_FIGURES == true
         figure;
-        imshow(img_rl_result); hold all;
+        imshow(img_rl_result, []); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','green','linewidth',1,'markersize',2);
+        axis off;
         %title('skeletonized + branchpoints');
     end
     
