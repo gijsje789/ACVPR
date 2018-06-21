@@ -4,7 +4,7 @@ clc; clear; close all;
 SHOW_FIGURES = true;
 
 % load database
-load database.mat;
+load database_maikel.mat;
 [data_count, ~] = size(data);
 
 % read comparison image
@@ -103,6 +103,28 @@ for iteration = 1:2
     
     img = v_repeated_line_bin;
     
+    % resize image according to the paper
+    size(img);
+    img_conv = conv2(img,[1,1,1;1,1,1],'valid');
+    img = img_conv(1:3:end,1:3:end)/6;
+    
+    if SHOW_FIGURES == true
+        figure;
+        imshow(img);
+        title('resized image');
+    end
+    
+    thresh = multithresh(img,2);
+    img = imquantize(img,thresh);
+    
+    if SHOW_FIGURES == true
+        figure;
+        imshow(img,[]);
+        title('3 thresholded image');
+    end
+    
+    img = img > 1;
+    
     % clean and fill (correct isolated black and white pixels)
     img_rl_clean = bwmorph(img,'clean');
     img_rl_fill = bwmorph(img_rl_clean,'fill');
@@ -186,7 +208,7 @@ for iteration = 1:2
     
     if SHOW_FIGURES == true
         figure;
-        imshow(test_img); hold all;
+        imshow(img_rl_result); hold all;
         plot(branch_array(:,1),branch_array(:,2),'o','color','cyan','linewidth',2);
         title('skeletonized + branchpoints');
     end
