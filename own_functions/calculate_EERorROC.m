@@ -41,7 +41,7 @@ pMatches = 0;
 ppMatches = 0;
 ii = 0;
 match_candidates_total = (floor(data_count/4) * 16) - data_count;
-non_match_canditates_total = floor(data_count)^2 - match_candidates_total;
+non_match_canditates_total = floor(data_count)^2 - match_candidates_total - data_count;
 
 
 for threshold = 0 : 0.01 : max_threshold
@@ -132,7 +132,7 @@ else
     title(strcat('ROC: ', num2str(ROC), '%'))
     xlabel('FAR (%)')
     ylabel('TAR (%)')
-    legend('TAR/FAR','')
+    legend('TAR/FAR')
 end
 
 
