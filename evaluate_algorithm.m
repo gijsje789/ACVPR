@@ -93,7 +93,7 @@ save('vein_matching_results.mat','matches_array');
 %xlswrite('vein_matching_results.xls',matches_array); 
 
 % calculate EER, print result and show EER graph
-[EER, EERthreshold] = calculate_EER(matches_array);
-fprintf('EER = %.2f%% (OPTIMAL THRESHOLD = %.2f%%)\n',EER, EERthreshold);
+[EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
+fprintf('EER = %.2f%% (OPTIMAL THRESHOLD = %.2f%%)\nROC = %.2f%%\n',EER, EERthreshold, ROC);
 
 
