@@ -32,15 +32,15 @@ for person = 1:PERSON_COUNT
             
             %% build RL skeleton
             if RL_SKEL
-                [img_rl_bin, branch_array_rl] = RLskeletonize(img);
+                [img_rl_bin, img_rl_skeleton, img_rl_grayscale] = RLskeletonize(img);
             end
             %% build MAC skeleton
             if MAC_SKEL_LBP
-                [img_mac_bin, branch_array_mac, max_curvature_gray] = MACskeletonize(img);
+                [img_mac_bin, branch_array_mac, max_curvature_gray, img_mac_skeleton] = MACskeletonize(img);
             end
             %% build MEC skeleton
             if MEC_SKEL
-                [img_mec_skeleton, branch_array_mec] = MECskeletonize(img);
+                [img_mec_bin, branch_array_mec, img_mec_skeleton, img_mec_grayscale] = MECskeletonize(img);
             end
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
@@ -55,21 +55,25 @@ for person = 1:PERSON_COUNT
             % (9) MAC_branch array
             % (10) MEC_branch array
             % (11) MAC grayscale for LBP (MAC_SKEL_LBP)
+            % (12) RL grayscale for LBP
+            % (13) MEC grayscale for LBP
             
             if RL_SKEL
                 data{db_counter,5} = img_rl_bin;               % RL binary
-                data{db_counter,8} = branch_array_rl;          % branchpoint array RL
+                data{db_counter,8} = img_rl_skeleton;          % skeleton RL
+                data{db_counter,12} = img_rl_grayscale;        % grayscale of veins
             end
             
             if MAC_SKEL_LBP
                 data{db_counter,6} = img_mac_bin;              % MAC binary
-                data{db_counter,9} = branch_array_mac;         % branchpoint array MAC
+                data{db_counter,9} = img_mac_skeleton;         % skeleton MAC
                 data{db_counter,11} = max_curvature_gray;      % grayscale of veins
             end
             
             if MEC_SKEL
-                data{db_counter,7} = img_mec_skeleton;         % MEC skeletonized
-                data{db_counter,10} = branch_array_mec;        % branchpoint array MEC
+                data{db_counter,7} = img_mec_bin;              % MEC binary
+                data{db_counter,10} = img_mec_skeleton;        % skeleton MEC
+                data{db_counter,13} = img_mec_grayscale;        % grayscale of veins
             end
 
             

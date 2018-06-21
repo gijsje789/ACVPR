@@ -1,8 +1,10 @@
-function [img_rl_bin, branch_array_rl] = repeatedLineTracking(img_gauss, fvr)
+function [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = repeatedLineTracking(img_gauss, fvr)
 
     % repeated lines method
     %fvr = ones(size(im));
     veins = repeated_line(img_gauss, fvr, 3000, 1, 17);
+
+    img_rl_grayscale = veins;
 
     % binarize the vein image
     md = median(veins(veins>0));
