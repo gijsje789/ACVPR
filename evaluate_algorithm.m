@@ -1,28 +1,30 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-% test_method = 'RL';
- test_method = 'MAC';
-% test_method = 'MEC';
+%test_method = 'RL';
+test_method = 'MAC';
+%test_method = 'MEC';
 %test_method = 'LBP';
 
 %match_method = 'template';
 match_method = 'distance';
 
-
-PEOPLE_COUNT = 2;    % max 60
+% select start and stop entry from database to evaluate; range depends on database size
+START_ENTRY = 6;        
+STOP_ENTRY = 8;       
 
 % load database
 load 'database.mat';
 [data_count, ~] = size(data);
 
 % empty matches array
-matches_array = zeros(PEOPLE_COUNT*24,PEOPLE_COUNT*24);
+matches_array = zeros((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY));
 
 % intialize progress counter
-m_counter = 1;
+m_counter = START_ENTRY;
 
-for compare = 1:PEOPLE_COUNT*24
+for compare = START_ENTRY:STOP_ENTRY
+    
     % read all data for first database entry
     current_source_img_reference = data{compare,1};          % original finger image
     person_reference = data{compare,2};                      % person number
@@ -41,7 +43,7 @@ for compare = 1:PEOPLE_COUNT*24
     rl_lbp_reference = data{compare,15};                     % rl lbp
     mec_lbp_reference = data{compare,16};                    % mec lbp
     
-    for compare_with = 1:PEOPLE_COUNT*24
+    for compare_with = START_ENTRY:STOP_ENTRY
         
         % read all data for first database entry
         current_source_img = data{compare_with,1};          % original finger image
@@ -100,7 +102,7 @@ for compare = 1:PEOPLE_COUNT*24
         end
         
         % report matching status
-        total = (PEOPLE_COUNT*24)^2;
+        total = (1 + STOP_ENTRY - START_ENTRY)^2;
         fprintf('MATCHING: %d/%d\n',m_counter,total);
         m_counter = m_counter + 1;
     end
