@@ -130,4 +130,3 @@ end
 [EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
 fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EER, EERthreshold, ROC);
 
-

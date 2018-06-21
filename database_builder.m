@@ -1,4 +1,4 @@
-% finger vein recognition
+% ACVPR finger vein recognition
 clear; clc; close all;
 
 % update user

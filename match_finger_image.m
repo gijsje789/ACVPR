@@ -19,34 +19,29 @@ numbers = sscanf(file, '%d_%d_%d_*');
 person_reference = numbers(1);
 finger_reference = numbers(2);
 number_reference = numbers(3);
-
+   
 fprintf('Processing input image...\n');
 
 % turn off all warnings
 warning('off','all')
 
 % intialize progress counter
-m_counter = 0;
+progress_counter = 0;
 
-% give latest optimal thresholds
-RL_THRESHOLD = 92;
+% give latest optimal thresholds (check with evaluate_algorithm.m)
+RL_THRESHOLD = 20;
 MAC_THRESHOLD = 7.6;
 MEC_THRESHOLD = 90;
 LBP_THRESHOLD = 1;
 
 %% input image to database data
-%current_source_img_ref = get_fingerImage(imageSet, person, finger, number);
 current_source_img_ref = selected_input_image;
-
 % resize image for speed purposes (50%)
 img_ref = imresize(im2double(current_source_img_ref), 0.5);
-
 % build RL skeleton
 [img_rl_bin_ref, branch_array_rl_ref, img_rl_skeleton, img_rl_grayscale] = RLskeletonize(img_ref);
-
 % build MAC skeleton
 [img_mac_bin_ref, branch_array_mac_ref, max_curvature_gray_ref, img_mac_skeleton] = MACskeletonize(img_ref);
-
 % build MEC skeleton
 [img_mec_bin_ref, branch_array_mec_ref, img_mec_skeleton, v_mean_curvature] = MECskeletonize(img_ref);
 
@@ -56,8 +51,6 @@ fprintf('Loading database...\n');
 % load database
 load 'database.mat';
 [data_count, ~] = size(data);
-% read folders (0001 to 0060 max)
-imageSet = read_imageSet('0001','0060');
 
 %% match with other database entries
 for compare_with = 1:data_count
@@ -82,8 +75,8 @@ for compare_with = 1:data_count
     
     % report matching status
     total = data_count;
-    m_counter = m_counter + 1;
-    fprintf('Matching: %d/%d = ',m_counter,total);
+    progress_counter = progress_counter + 1;
+    fprintf('Matching: %d/%d = ',progress_counter,total);
     
     if(~(person == person_reference && finger == finger_reference && number == number_reference))
         % matching method specific match calculator
@@ -95,8 +88,10 @@ for compare_with = 1:data_count
             end
             fprintf('%.2f%%\n',full_match_percentage);
             if full_match_percentage > RL_THRESHOLD
-                figure; imshow(current_source_img);
-                title(strcat('RL: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+                position =  [0 0];
+                value = ['Person: ' num2str(person), ', finger: ' num2str(finger), ', photo: ' num2str(number), '        (', num2str(round(full_match_percentage,1)), '% match)'];
+                img = insertText(current_source_img,position,value,'AnchorPoint','LeftTop', 'fontsize', 20, 'boxcolor','black','textcolor','white');
+                figure; imshow(img);              %% MATCH FOUND!
             end
         elseif strcmp(test_method,'MAC')
             if strcmp(match_method, 'template')
@@ -106,8 +101,7 @@ for compare_with = 1:data_count
             end
             fprintf('%.2f%%\n',full_match_percentage);
             if full_match_percentage > MAC_THRESHOLD
-                figure; imshow(current_source_img);
-                title(strcat('MAC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+                figure; imshow(current_source_img);              %% MATCH FOUND!
             end
         elseif strcmp(test_method,'MEC')
             if strcmp(match_method, 'template')
@@ -117,8 +111,7 @@ for compare_with = 1:data_count
             end
             fprintf('%.2f%%\n',full_match_percentage);
             if full_match_percentage > MEC_THRESHOLD
-                figure; imshow(current_source_img);
-                title(strcat('MEC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+                figure; imshow(current_source_img);              %% MATCH FOUND!
             end
         elseif strcmp(test_method,'LBP')
             error = lbp_matching(max_curvature_gray_ref, img_mac_gray, img_mac_bin_ref, img_mac_bin);
@@ -128,8 +121,7 @@ for compare_with = 1:data_count
                 fprintf('0\n');
             end
             if error < LBP_THRESHOLD
-                figure; imshow(current_source_img);
-                title('person %d finger %d photo %d error: %d',person,finger,number,error);
+                figure; imshow(current_source_img);              %% MATCH FOUND!
             end
         else
             fprintf('invalid test method. Use RL, MAC, MEC or LBP');
@@ -137,7 +129,6 @@ for compare_with = 1:data_count
     else
         fprintf('Same image \n');
     end
-    
 end
 
 
