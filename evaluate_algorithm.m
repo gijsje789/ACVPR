@@ -31,6 +31,11 @@ for compare = 1:PEOPLE_COUNT*24
     img_mac_skel_reference = data{compare,9};                % skel MAC
     img_mec_skel_reference = data{compare,10};               % skel MEC
     img_mac_gray_reference = data{compare,11};               % gray MAC image for LBP
+    img_rl_gray_reference = data{compare,12};                % gray RL image or LBP
+    img_mec_gray_reference = data{compare,13};               % gray MEC image for LBP
+    mac_lbp_reference = data{compare,14};                    % mac lbp
+    rl_lbp_reference = data{compare,15};                     % rl lbp
+    mec_lbp_reference = data{compare,16};                    % mec lbp
     
     for compare_with = 1:PEOPLE_COUNT*24
         
@@ -46,6 +51,11 @@ for compare = 1:PEOPLE_COUNT*24
         img_mac_skel = data{compare_with,9};                % skel MAC
         img_mec_skel = data{compare_with,10};               % skel MEC
         img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
+        img_rl_gray = data{compare_with,12};                % gray RL image or LBP
+        img_mec_gray = data{compare_with,13};               % gray MEC image for LBP
+        mac_lbp = data{compare_with,14};                    % mac lbp
+        rl_lbp = data{compare_with,15};                     % rl lbp
+        mec_lbp = data{compare_with,16};                    % mec lbp
         
         % matching method specific actions
         if strcmp(test_method,'RL')
