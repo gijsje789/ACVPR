@@ -1,4 +1,4 @@
-function [img_mec_skeleton, branch_array_mec] = MECskeletonize(img)
+function [img_mec_bin, branch_array_mec, img_mec_skeleton, v_mean_curvature] = MECskeletonize(img)
 
     mask_height=4; % Height of the mask
     mask_width=20; % Width of the mask
@@ -21,6 +21,8 @@ function [img_mec_skeleton, branch_array_mec] = MECskeletonize(img)
 
     % Mean curvature method
     v_mean_curvature = mean_curvature(S);
+
+    img_mec_bin = v_mean_curvature;
 
     % Binarise the vein image
     md = 0.01;

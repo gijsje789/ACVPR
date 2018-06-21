@@ -1,4 +1,4 @@
-function [img_mac_bin, branch_array_mac, v_max_curvature] = MACskeletonize(img)
+function [img_mac_bin, branch_array_mac, v_max_curvature, img_mac_skeleton] = MACskeletonize(img)
     img_enhanced_mac = img;
 
     % find Lee regions (finger region)

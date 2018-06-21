@@ -1,4 +1,4 @@
-function [img_rl_bin, branch_array_rl] = RLskeletonize(img)
+function [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = RLskeletonize(img)
 
     img_enhanced_rl = img;
             
@@ -17,6 +17,6 @@ function [img_rl_bin, branch_array_rl] = RLskeletonize(img)
         img_gauss(edges(2,col):end, col) = 0;
     end
 
-    [img_rl_bin, branch_array_rl] = repeatedLineTracking(img_gauss, fvr);
+    [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = repeatedLineTracking(img_gauss, fvr);
 
 end
