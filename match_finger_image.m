@@ -1,10 +1,10 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-%test_method = 'RL';
+test_method = 'RL';
 %test_method = 'MAC';
 %test_method = 'MEC';
-test_method = 'LBP';
+%test_method = 'LBP';
 
 % ask user for input image
 [file,path] = uigetfile('*.png');
@@ -56,16 +56,18 @@ for compare_with = 1:data_count
     img_rl_bin = data{compare_with,5};                  % RL binary
     img_mac_bin = data{compare_with,6};                 % MAC binary
     img_mec_bin = data{compare_with,7};                 % MEC binary
-    branch_array_rl = data{compare_with,8};             % branchpoint array RL
-    branch_array_mac = data{compare_with,9};            % branchpoint array MAC
-    branch_array_mec = data{compare_with,10};           % branchpoint array MEC
+    img_rl_skel = data{compare_with,8};                 % skel RL
+    img_mac_skel = data{compare_with,9};                % skel MAC
+    img_mec_skel = data{compare_with,10};               % skel MEC
     img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
+    
+    
     
     % report matching status
     total = data_count;
     m_counter = m_counter + 1;
     fprintf('Matching: %d/%d = ',m_counter,total);
-        
+    
     % matching method specific match calculator
     if strcmp(test_method,'RL')
         full_match_percentage = template_matching(img_rl_bin_ref, img_rl_bin);

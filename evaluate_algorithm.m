@@ -27,9 +27,9 @@ for compare = 1:PEOPLE_COUNT*24
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
     img_mec_bin_reference = data{compare,7};                 % MEC binary
-    branch_array_rl_reference = data{compare,8};             % branchpoint array RL
-    branch_array_mac_reference = data{compare,9};            % branchpoint array MAC
-    branch_array_mec_reference = data{compare,10};           % branchpoint array MEC
+    img_rl_skel_reference = data{compare,8};                 % skel RL
+    img_mac_skel_reference = data{compare,9};                % skel MAC
+    img_mec_skel_reference = data{compare,10};               % skel MEC
     img_mac_gray_reference = data{compare,11};               % gray MAC image for LBP
     
     for compare_with = 1:PEOPLE_COUNT*24
@@ -42,9 +42,9 @@ for compare = 1:PEOPLE_COUNT*24
         img_rl_bin = data{compare_with,5};                  % RL binary
         img_mac_bin = data{compare_with,6};                 % MAC binary
         img_mec_bin = data{compare_with,7};                 % MEC binary
-        branch_array_rl = data{compare_with,8};             % branchpoint array RL
-        branch_array_mac = data{compare_with,9};            % branchpoint array MAC
-        branch_array_mec = data{compare_with,10};           % branchpoint array MEC
+        img_rl_skel = data{compare_with,8};                 % skel RL
+        img_mac_skel = data{compare_with,9};                % skel MAC
+        img_mec_skel = data{compare_with,10};               % skel MEC
         img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
         
         % matching method specific actions
