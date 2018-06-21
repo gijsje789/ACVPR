@@ -10,6 +10,12 @@ test_method = 'RL';
 [file,path] = uigetfile('*.png');
 selected_input_image = imread(file);
 
+numbers = sscanf(file, '%d_%d_%d_*');
+
+person_reference = numbers(1);
+finger_reference = numbers(2);
+number_reference = numbers(3);
+
 fprintf('Processing input image...\n');
 
 % intialize progress counter
@@ -40,7 +46,7 @@ img_ref = imresize(im2double(current_source_img_ref), 0.5);
 fprintf('Loading database...\n');
 
 % load database
-load 'database - full.mat';
+load 'database.mat';
 [data_count, ~] = size(data);
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
@@ -67,42 +73,46 @@ for compare_with = 1:data_count
     total = data_count;
     m_counter = m_counter + 1;
     fprintf('Matching: %d/%d = ',m_counter,total);
-    
-    % matching method specific match calculator
-    if strcmp(test_method,'RL')
-        full_match_percentage = template_matching(img_rl_bin_ref, img_rl_bin);
-        fprintf('%.2f%%\n',full_match_percentage);
-        if full_match_percentage > RL_THRESHOLD
-            figure; imshow(current_source_img);
-            title(strcat('RL: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
-        end
-    elseif strcmp(test_method,'MAC')
-        full_match_percentage = template_matching(img_mac_bin_ref, img_mac_bin);
-        fprintf('%.2f%%\n',full_match_percentage);
-        if full_match_percentage > MAC_THRESHOLD
-            figure; imshow(current_source_img);
-            title(strcat('MAC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
-        end
-    elseif strcmp(test_method,'MEC')
-        full_match_percentage = template_matching(img_mec_skeleton_ref, img_mec_bin);
-        fprintf('%.2f%%\n',full_match_percentage);
-        if full_match_percentage > MEC_THRESHOLD
-            figure; imshow(current_source_img);
-            title(strcat('MEC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
-        end
-    elseif strcmp(test_method,'LBP')
-        error = lbp_matching(max_curvature_gray_ref, img_mac_gray, img_mac_bin_ref, img_mac_bin);
-        if error ~= -1
-            fprintf('%.2f\n',error);
+
+    if(~(person == person_reference && finger == finger_reference && number == number_reference))
+        % matching method specific match calculator
+        if strcmp(test_method,'RL')
+            full_match_percentage = template_matching(img_rl_bin_ref, img_rl_bin);
+            fprintf('%.2f%%\n',full_match_percentage);
+            if full_match_percentage > RL_THRESHOLD
+                figure; imshow(current_source_img);
+                title(strcat('RL: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+            end
+        elseif strcmp(test_method,'MAC')
+            full_match_percentage = template_matching(img_mac_bin_ref, img_mac_bin);
+            fprintf('%.2f%%\n',full_match_percentage);
+            if full_match_percentage > MAC_THRESHOLD
+                figure; imshow(current_source_img);
+                title(strcat('MAC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+            end
+        elseif strcmp(test_method,'MEC')
+            full_match_percentage = template_matching(img_mec_skeleton_ref, img_mec_bin);
+            fprintf('%.2f%%\n',full_match_percentage);
+            if full_match_percentage > MEC_THRESHOLD
+                figure; imshow(current_source_img);
+                title(strcat('MEC: person ',num2str(person),' finger ',num2str(finger),' photo ',num2str(number),' match: ',num2str(full_match_percentage),'%'))
+            end
+        elseif strcmp(test_method,'LBP')
+            error = lbp_matching(max_curvature_gray_ref, img_mac_gray, img_mac_bin_ref, img_mac_bin);
+            if error ~= -1
+                fprintf('%.2f\n',error);
+            else
+                fprintf('0\n');
+            end
+            if error < LBP_THRESHOLD
+                figure; imshow(current_source_img);
+                title('person %d finger %d photo %d error: %d',person,finger,number,error);
+            end
         else
-            fprintf('0\n');
-        end
-        if error < LBP_THRESHOLD
-            figure; imshow(current_source_img);
-            title('person %d finger %d photo %d error: %d',person,finger,number,error);
+            fprintf('invalid test method. Use RL, MAC, MEC or LBP');
         end
     else
-        fprintf('invalid test method. Use RL, MAC, MEC or LBP');
+        fprintf('Same image \n');
     end
     
 end
