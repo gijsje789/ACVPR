@@ -9,6 +9,7 @@ clc; clear; close all;
 %match_method = 'template';
 match_method = 'distance';
 
+
 PEOPLE_COUNT = 2;    % max 60
 
 % load database
@@ -30,9 +31,9 @@ for compare = 1:PEOPLE_COUNT*24
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
     img_mec_bin_reference = data{compare,7};                 % MEC binary
-    img_rl_skel_reference = data{compare,8};             % branchpoint array RL
-    img_mac_skel_reference = data{compare,9};            % branchpoint array MAC
-    img_mec_skel_reference = data{compare,10};           % branchpoint array MEC
+    img_rl_skel_reference = data{compare,8};                 % branchpoint array RL
+    img_mac_skel_reference = data{compare,9};                % branchpoint array MAC
+    img_mec_skel_reference = data{compare,10};               % branchpoint array MEC
     img_mac_gray_reference = data{compare,11};               % gray MAC image for LBP
     img_rl_gray_reference = data{compare,12};                % gray RL image or LBP
     img_mec_gray_reference = data{compare,13};               % gray MEC image for LBP
@@ -50,9 +51,9 @@ for compare = 1:PEOPLE_COUNT*24
         img_rl_bin = data{compare_with,5};                  % RL binary
         img_mac_bin = data{compare_with,6};                 % MAC binary
         img_mec_bin = data{compare_with,7};                 % MEC binary
-        img_rl_skel = data{compare_with,8};             % branchpoint array RL
-        img_mac_skel = data{compare_with,9};            % branchpoint array MAC
-        img_mec_skel = data{compare_with,10};           % branchpoint array MEC
+        img_rl_skel = data{compare_with,8};                 % branchpoint array RL
+        img_mac_skel = data{compare_with,9};                % branchpoint array MAC
+        img_mec_skel = data{compare_with,10};               % branchpoint array MEC
         img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
         img_rl_gray = data{compare_with,12};                % gray RL image or LBP
         img_mec_gray = data{compare_with,13};               % gray MEC image for LBP

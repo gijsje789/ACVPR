@@ -60,13 +60,6 @@ if errorFlag == 0
         end
     end
     
-    
-    
-    %     % add images to see effect of transformation
-    %     comb_after = Ir + img_skel;
-    %     % calculate perfect match
-    %     error_distance = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + sum(comb_after(:) == 2));
-    
 else
     error_distance = -1;
 end
