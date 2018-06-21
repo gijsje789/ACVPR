@@ -11,7 +11,7 @@ match_method = 'template';
 
 % select start and stop entry of database to evaluate, range depends on database size
 START_ENTRY = 1;
-STOP_ENTRY = 6;
+STOP_ENTRY = 96;
 
 % load database
 load 'database.mat';

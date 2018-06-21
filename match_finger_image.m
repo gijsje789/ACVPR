@@ -6,8 +6,8 @@ test_method = 'RL';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
-%match_method = 'template';
-match_method = 'distance';
+match_method = 'template';
+%match_method = 'distance';
 
 % ask user for input image
 [file,path] = uigetfile('*.png');
@@ -22,9 +22,13 @@ number_reference = numbers(3);
 
 fprintf('Processing input image...\n');
 
+% turn off all warnings
+warning('off','all')
+
 % intialize progress counter
 m_counter = 0;
 
+% give latest optimal thresholds
 RL_THRESHOLD = 92;
 MAC_THRESHOLD = 7.6;
 MEC_THRESHOLD = 90;
@@ -70,8 +74,6 @@ for compare_with = 1:data_count
     img_mac_skel = data{compare_with,9};                % skel MAC
     img_mec_skel = data{compare_with,10};               % skel MEC
     img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
-    
-    
     
     % report matching status
     total = data_count;
