@@ -1,10 +1,10 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-% test_method = 'RL';
-% test_method = 'MAC';
-% test_method = 'MEC';
-test_method = 'LBP';
+%test_method = 'RL';
+test_method = 'MAC';
+%test_method = 'MEC';
+%test_method = 'LBP';
 
 PEOPLE_COUNT = 2;    % max 60
 
@@ -51,7 +51,8 @@ for compare = 1:PEOPLE_COUNT*24
         if strcmp(test_method,'RL')
             full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
         elseif strcmp(test_method,'MAC')
-            full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+            %full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
+            error_distance = template_matching_distance(img_mac_skel_reference, img_mac_skel);
         elseif strcmp(test_method,'MEC')
             full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin);
         elseif strcmp(test_method,'LBP')
@@ -64,7 +65,8 @@ for compare = 1:PEOPLE_COUNT*24
         end
         if strcmp(test_method,'RL') || strcmp(test_method,'MAC') || strcmp(test_method,'MEC')
             % save result to matches array
-            matches_array(compare, compare_with) = full_match_percentage;
+            %matches_array(compare, compare_with) = full_match_percentage;
+            matches_array(compare, compare_with) = error_distance;
         end
         
         % report matching status
