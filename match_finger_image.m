@@ -10,6 +10,7 @@ test_method = 'RL';
 [file,path] = uigetfile('*.png');
 selected_input_image = imread(file);
 
+% get person, finger and number of selected input image
 numbers = sscanf(file, '%d_%d_%d_*');
 
 person_reference = numbers(1);
