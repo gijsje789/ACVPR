@@ -35,11 +35,11 @@ for compare = START_ENTRY:STOP_ENTRY
     img_rl_skel_reference = data{compare,8};                 % branchpoint array RL
     img_mac_skel_reference = data{compare,9};                % branchpoint array MAC
     img_mec_skel_reference = data{compare,10};               % branchpoint array MEC
-    img_mac_gray_reference = data{compare,11};               % gray MAC image for LBP
-    img_rl_gray_reference = data{compare,12};                % gray RL image or LBP
+    img_rl_gray_reference = data{compare,11};                % gray RL image or LBP
+    img_mac_gray_reference = data{compare,12};               % gray MAC image for LBP
     img_mec_gray_reference = data{compare,13};               % gray MEC image for LBP
-    mac_lbp_reference = data{compare,14};                    % mac lbp
-    rl_lbp_reference = data{compare,15};                     % rl lbp
+    rl_lbp_reference = data{compare,14};                     % rl lbp
+    mac_lbp_reference = data{compare,15};                    % mac lbp
     mec_lbp_reference = data{compare,16};                    % mec lbp
     
     for compare_with = START_ENTRY:STOP_ENTRY
@@ -55,12 +55,12 @@ for compare = START_ENTRY:STOP_ENTRY
         img_rl_skel = data{compare_with,8};                 % branchpoint array RL
         img_mac_skel = data{compare_with,9};                % branchpoint array MAC
         img_mec_skel = data{compare_with,10};               % branchpoint array MEC
-        img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
-        img_rl_gray = data{compare_with,12};                % gray RL image or LBP
+        img_rl_gray = data{compare_with,11};                % gray RL image or LBP
+        img_mac_gray = data{compare_with,12};               % gray MAC image for LBP
         img_mec_gray = data{compare_with,13};               % gray MEC image for LBP
-        mac_lbp = data{compare_with,14};                    % mac lbp
-        rl_lbp = data{compare_with,15};                     % rl lbp
-        mec_lbp = data{compare_with,16};                    % mec lbp
+        rl_lbp = data{compare_with,14};                     % RL lbp
+        mac_lbp = data{compare_with,15};                    % MAC lbp
+        mec_lbp = data{compare_with,16};                    % MEC lbp
         
         % matching method specific actions
         if(~(person == person_reference && finger == finger_reference && number == number_reference))

@@ -70,16 +70,21 @@ for compare_with = 1:data_count
     img_rl_bin = data{compare_with,5};                  % RL binary
     img_mac_bin = data{compare_with,6};                 % MAC binary
     img_mec_bin = data{compare_with,7};                 % MEC binary
-    img_rl_skel = data{compare_with,8};                 % skel RL
-    img_mac_skel = data{compare_with,9};                % skel MAC
-    img_mec_skel = data{compare_with,10};               % skel MEC
-    img_mac_gray = data{compare_with,11};               % gray MAC image for LBP
+    img_rl_skel = data{compare_with,8};                 % branchpoint array RL
+    img_mac_skel = data{compare_with,9};                % branchpoint array MAC
+    img_mec_skel = data{compare_with,10};               % branchpoint array MEC
+    img_rl_gray = data{compare_with,11};                % gray RL image or LBP
+    img_mac_gray = data{compare_with,12};               % gray MAC image for LBP
+    img_mec_gray = data{compare_with,13};               % gray MEC image for LBP
+    rl_lbp = data{compare_with,14};                     % RL lbp
+    mac_lbp = data{compare_with,15};                    % MAC lbp
+    mec_lbp = data{compare_with,16};                    % MEC lbp
     
     % report matching status
     total = data_count;
     m_counter = m_counter + 1;
     fprintf('Matching: %d/%d = ',m_counter,total);
-
+    
     if(~(person == person_reference && finger == finger_reference && number == number_reference))
         % matching method specific match calculator
         if strcmp(test_method,'RL')
