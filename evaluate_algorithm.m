@@ -3,8 +3,8 @@ clc; clear; close all;
 
 % test_method = 'RL';
 % test_method = 'MAC';
-% test_method = 'MEC';
-test_method = 'LBP';
+ test_method = 'MEC';
+%test_method = 'LBP';
 
 PEOPLE_COUNT = 2;    % max 60
 
