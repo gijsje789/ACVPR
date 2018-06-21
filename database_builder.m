@@ -4,9 +4,6 @@ clear; clc; close all;
 % update user
 fprintf('DATABASE: Reading input photos...\n');
 
-% counter for progress
-db_counter = 1;
-
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
@@ -17,9 +14,9 @@ START_PERSON = 7;          % range: 1 - 60
 STOP_PERSON = 10;          % range: 1 - 60
 
 START_FINGER = 1;          % range: 1 - 6
-STOP_FINGER = 1;           % range: 1 - 6
+STOP_FINGER = 6;           % range: 1 - 6
 
-START_PHOTO = 3;           % range: 1 - 4
+START_PHOTO = 1;           % range: 1 - 4
 STOP_PHOTO = 4;            % range: 1 - 4
 
 RL_SKEL = true;            % Enable RL (repeated line tracking)
@@ -31,6 +28,9 @@ LBP_completeRun = true;    % Use the old database to add th LBPs to the database
 
 % calculate total iterations
 total = (1 + STOP_PERSON - START_PERSON)*(1 + STOP_FINGER - START_FINGER)*(1 + STOP_PHOTO - START_PHOTO);
+
+% counter for database progress
+db_counter = 1;
 
 if LBP_completeRun
     % initialize array for speed
@@ -45,7 +45,7 @@ for person = START_PERSON:STOP_PERSON
     for finger = START_FINGER:STOP_FINGER
         
         for number = START_PHOTO:STOP_PHOTO
-
+            
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
             
@@ -81,7 +81,7 @@ for person = START_PERSON:STOP_PERSON
             data{db_counter,2} = person;                   % person number
             data{db_counter,3} = finger;                   % finger number
             data{db_counter,4} = number;                   % photo number
-
+            
             % (5) RL_SKEL
             % (6) MAC_SKEL
             % (7) MEC_SKEL
@@ -110,7 +110,7 @@ for person = START_PERSON:STOP_PERSON
             if MEC_SKEL
                 data{db_counter,7} = img_mec_bin;              % MEC binary
                 data{db_counter,10} = img_mec_skeleton;        % skeleton MEC
-                data{db_counter,13} = img_mec_grayscale;        % grayscale of veins
+                data{db_counter,13} = img_mec_grayscale;       % grayscale of veins
             end
             
             if LBP_histograms

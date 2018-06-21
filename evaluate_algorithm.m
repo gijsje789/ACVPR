@@ -1,24 +1,23 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-%test_method = 'RL';
-test_method = 'MAC';
+test_method = 'RL';
+%test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
-%match_method = 'template';
-match_method = 'distance';
+match_method = 'template';
+%match_method = 'distance';
 
-% select start and stop entry from database to evaluate; range depends on database size
-START_ENTRY = 6;        
-STOP_ENTRY = 8;       
+% select start and stop entry of database to evaluate, range depends on database size
+START_ENTRY = 1;
+STOP_ENTRY = 6;
 
 % load database
 load 'database.mat';
-[data_count, ~] = size(data);
 
-% empty matches array
-matches_array = zeros((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY));
+% fill matches array with -1
+matches_array = ones((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY))*-1;
 
 % intialize progress counter
 m_counter = START_ENTRY;
@@ -95,7 +94,7 @@ for compare = START_ENTRY:STOP_ENTRY
             full_match_percentage = -1;
             error = -1;
         end
-
+        
         if strcmp(test_method,'RL') || strcmp(test_method,'MAC') || strcmp(test_method,'MEC')
             % save result to matches array
             matches_array(compare, compare_with) = full_match_percentage;
@@ -116,12 +115,19 @@ if strcmp(test_method,'LBP')
     matches_array(1:1+size(matches_array,1):end) = -1;
 end
 
-% save to matrix file and excel file
+% save to matrix file
 save('vein_matching_results.mat','matches_array');
-%xlswrite('vein_matching_results.xls',matches_array); 
 
-% calculate EER, print result and show EER graph
+% try to save matrix to Excel file
+try
+    delete 'vein_matching_results.xlsx';
+    xlswrite('vein_matching_results.xlsx',matches_array);
+catch exception
+    fprintf('Warning: Could not write Excel file...\n');
+end
+
+% calculate EER, ROC, print result and show graphs
 [EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
-fprintf('EER = %.2f%% (OPTIMAL THRESHOLD = %.2f%%)\nROC = %.2f%%\n',EER, EERthreshold, ROC);
+fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EER, EERthreshold, ROC);
 
 
