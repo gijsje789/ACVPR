@@ -12,11 +12,21 @@ FINGER_PHOTO_COUNT = 4;    % max 4
 RL_SKEL = true;            % Enable RL (repeated line tracking)
 MAC_SKEL_LBP = true;       % Enable MAC (maximum curvature) and LBP (local binary pattern)
 MEC_SKEL = true;           % Enable MEC (mean curvature)
+LBP_histograms = true;      % Enable histogram of LBPs
+LBP_completeRun = true;    % Use the old database to add th LBPs to the database
+                            % Set to true if you are building the entire
+                            % database and not just the LBP histograms.
 
 % calculate total iterations
 total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
-% initialize array for speed
-data{total,11} = [];
+
+if LBP_completeRun
+    % initialize array for speed
+    data{total,11} = [];
+else
+    load('database.mat');
+end
+
 
 for person = 1:PERSON_COUNT
     
@@ -42,6 +52,18 @@ for person = 1:PERSON_COUNT
             if MEC_SKEL
                 [img_mec_bin, branch_array_mec, img_mec_skeleton, img_mec_grayscale] = MECskeletonize(img);
             end
+            %% Add histograms of LBPs
+            if LBP_histograms
+                if LBP_completeRun
+                    MAC_LBP = extractLBPFeatures(max_curvature_gray, 'Upright', false, 'Normalization', 'None');
+                    RL_LBP = extractLBPFeatures(img_rl_grayscale, 'Upright', false, 'Normalization', 'None');
+                    MEC_LBP = extractLBPFeatures(img_mec_grayscale, 'Upright', false, 'Normalization', 'None');
+                else
+                    MAC_LBP = extractLBPFeatures(data{db_counter,11}, 'Upright', false, 'Normalization', 'None');
+                    RL_LBP = extractLBPFeatures(data{db_counter,12}, 'Upright', false, 'Normalization', 'None');
+                    MEC_LBP = extractLBPFeatures(data{db_counter,13}, 'Upright', false, 'Normalization', 'None');
+                end
+            end
             %% fill database entry
             data{db_counter,1} = current_source_img;       % non-cropped finger image
             data{db_counter,2} = person;                   % person number
@@ -57,6 +79,9 @@ for person = 1:PERSON_COUNT
             % (11) MAC grayscale for LBP (MAC_SKEL_LBP)
             % (12) RL grayscale for LBP
             % (13) MEC grayscale for LBP
+            % (14) MAC lbp
+            % (15) RL lbp
+            % (16) MEC lbp
             
             if RL_SKEL
                 data{db_counter,5} = img_rl_bin;               % RL binary
@@ -75,7 +100,12 @@ for person = 1:PERSON_COUNT
                 data{db_counter,10} = img_mec_skeleton;        % skeleton MEC
                 data{db_counter,13} = img_mec_grayscale;        % grayscale of veins
             end
-
+            
+            if LBP_histograms
+                data{db_counter, 14} = MAC_LBP;
+                data{db_counter, 15} = RL_LBP;
+                data{db_counter, 16} = MEC_LBP;
+            end
             
             %% print progress
             fprintf('DATABASE: %d/%d\n',db_counter,total);
@@ -86,8 +116,10 @@ for person = 1:PERSON_COUNT
 end
 
 % delete previous database if present
-db_file = fullfile(cd, 'database.mat');
-delete(db_file);
+if ~LBP_completeRun
+    db_file = fullfile(cd, 'database.mat');
+    delete(db_file);
+end
 
 % save findings to new database
 save('database.mat','data');
