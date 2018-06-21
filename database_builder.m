@@ -42,7 +42,7 @@ for person = 1:PERSON_COUNT
             
             %% build RL skeleton
             if RL_SKEL
-                [img_rl_bin, img_rl_skeleton, img_rl_grayscale] = RLskeletonize(img);
+                [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = RLskeletonize(img);
             end
             %% build MAC skeleton
             if MAC_SKEL_LBP
