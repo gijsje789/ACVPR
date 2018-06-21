@@ -132,7 +132,7 @@ else
     title(strcat('ROC: ', num2str(ROC), '%'))
     xlabel('FAR (%)')
     ylabel('TAR (%)')
-    legend('TAR/FAR','')
+    legend('TAR/FAR')
 end
 
 
