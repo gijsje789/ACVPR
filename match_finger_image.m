@@ -6,8 +6,8 @@ test_method = 'RL';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
-match_method = 'template';
-%match_method = 'distance';
+%match_method = 'template';
+match_method = 'distance';
 
 % ask user for input image
 [file,path] = uigetfile('*.png');
@@ -25,7 +25,7 @@ fprintf('Processing input image...\n');
 % intialize progress counter
 m_counter = 0;
 
-RL_THRESHOLD = 90;
+RL_THRESHOLD = 92;
 MAC_THRESHOLD = 7.6;
 MEC_THRESHOLD = 90;
 LBP_THRESHOLD = 1;
