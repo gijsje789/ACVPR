@@ -1,38 +1,50 @@
 % finger vein recognition
 clear; clc; close all;
 
+% update user
+fprintf('DATABASE: Reading input photos...\n');
+
 % counter for progress
 db_counter = 1;
+
 % read folders (0001 to 0060 max)
 imageSet = read_imageSet('0001','0060');
 
-PERSON_COUNT = 2;          % max 60
-FINGER_COUNT = 6;          % max 6
-FINGER_PHOTO_COUNT = 4;    % max 4
+% update user
+fprintf('DATABASE: Preparing...\n');
+
+START_PERSON = 7;          % range: 1 - 60
+STOP_PERSON = 10;          % range: 1 - 60
+
+START_FINGER = 1;          % range: 1 - 6
+STOP_FINGER = 1;           % range: 1 - 6
+
+START_PHOTO = 3;           % range: 1 - 4
+STOP_PHOTO = 4;            % range: 1 - 4
+
 RL_SKEL = true;            % Enable RL (repeated line tracking)
 MAC_SKEL_LBP = true;       % Enable MAC (maximum curvature) and LBP (local binary pattern)
 MEC_SKEL = true;           % Enable MEC (mean curvature)
-LBP_histograms = true;      % Enable histogram of LBPs
+LBP_histograms = true;     % Enable histogram of LBPs
 LBP_completeRun = true;    % Use the old database to add th LBPs to the database
-                            % Set to true if you are building the entire
-                            % database and not just the LBP histograms.
+% Set to true if you are building the entire database and not just the LBP histograms.
 
 % calculate total iterations
-total = PERSON_COUNT*FINGER_COUNT*FINGER_PHOTO_COUNT;
+total = (1 + STOP_PERSON - START_PERSON)*(1 + STOP_FINGER - START_FINGER)*(1 + STOP_PHOTO - START_PHOTO);
 
 if LBP_completeRun
     % initialize array for speed
-    data{total,11} = [];
+    data{total,16} = [];
 else
     load('database.mat');
 end
 
 
-for person = 1:PERSON_COUNT
+for person = START_PERSON:STOP_PERSON
     
-    for finger = 1:FINGER_COUNT
+    for finger = START_FINGER:STOP_FINGER
         
-        for number = 1:FINGER_PHOTO_COUNT
+        for number = START_PHOTO:STOP_PHOTO
 
             % read current image
             current_source_img = get_fingerImage(imageSet, person, finger, number);
@@ -123,4 +135,4 @@ end
 
 % save findings to new database
 save('database.mat','data');
-fprintf('DATABASE: DONE\n');
+fprintf('DATABASE: Done...\n');
