@@ -90,7 +90,7 @@ for compare = START_ENTRY:STOP_ENTRY
                 %error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
                 %error = lbp_matching(img_mec_gray_reference, img_mec_gray, img_mec_bin_reference, img_mec_bin);
                 if error ~= -1
-                    matches_array(compare - START_ENTRY + 1,compare_with - START_ENTRY + 1) = error;
+                    matches_array(compare-START_ENTRY+1,compare_with-START_ENTRY+1) = error;
                 end
             else
                 fprintf('invalid test method. Use RL, MAC, MEC or LBP');
