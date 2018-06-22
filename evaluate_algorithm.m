@@ -2,25 +2,25 @@
 clc; clear; close all;
 
 %test_method = 'RL';
-test_method = 'MAC';
+%test_method = 'MAC';
 %test_method = 'MEC';
-%test_method = 'LBP';
+test_method = 'LBP';
 
 match_method = 'template';
 %match_method = 'distance';
 
 % select start and stop entry of database to evaluate, range depends on database size
-START_ENTRY = 1;
-STOP_ENTRY = 48;
+START_ENTRY = 49;
+STOP_ENTRY = 96;
 
 % load database
-load 'testing_database.mat';
+load 'database.mat';
 
 % fill matches array with -1
 matches_array = ones((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY))*-1;
 
 % intialize progress counter
-m_counter = START_ENTRY;
+m_counter = 1;
 
 for compare = START_ENTRY:STOP_ENTRY
     
@@ -78,6 +78,7 @@ for compare = START_ENTRY:STOP_ENTRY
                 end
             elseif strcmp(test_method,'MEC')
                 if strcmp(match_method, 'template')
+                    %full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin, img_mec_gray_reference, img_mec_gray);
                     full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin);
                 elseif strcmp(match_method, 'distance')
                     full_match_percentage = distance_tr_test(img_mec_skel_reference, img_mec_skel);
@@ -85,7 +86,7 @@ for compare = START_ENTRY:STOP_ENTRY
             elseif strcmp(test_method,'LBP')
                 error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
                 if error ~= -1
-                    matches_array(compare,compare_with) = error;
+                    matches_array(compare-START_ENTRY+1,compare_with-START_ENTRY+1) = error;
                 end
             else
                 fprintf('invalid test method. Use RL, MAC, MEC or LBP');
@@ -97,7 +98,7 @@ for compare = START_ENTRY:STOP_ENTRY
         
         if strcmp(test_method,'RL') || strcmp(test_method,'MAC') || strcmp(test_method,'MEC')
             % save result to matches array
-            matches_array(compare, compare_with) = full_match_percentage;
+            matches_array(compare-START_ENTRY+1,compare_with-START_ENTRY+1) = full_match_percentage;
         end
         
         % report matching status
@@ -119,13 +120,15 @@ end
 save('vein_matching_results.mat','matches_array');
 
 % try to save matrix to Excel file
-try
-    delete 'vein_matching_results.xlsx';
-    xlswrite('vein_matching_results.xlsx',matches_array);
-catch exception
-    fprintf('Warning: Could not write Excel file...\n');
-end
+% fprintf('Saving to results to .xls...\n');
+% try
+%     delete 'vein_matching_results.xlsx';
+%     xlswrite('vein_matching_results.xlsx',matches_array);
+% catch exception
+%     fprintf('Warning: Could not write Excel file...\n');
+% end
 
+fprintf('Calculating EER...\n');
 % calculate EER, ROC, print result and show graphs
 [EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
 fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EERthreshold, EER, ROC);

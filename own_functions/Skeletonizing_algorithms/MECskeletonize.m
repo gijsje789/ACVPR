@@ -1,5 +1,6 @@
 function [img_mec_bin, branch_array_mec, img_mec_skeleton, v_mean_curvature] = MECskeletonize(img)
 
+    
     mask_height=4; % Height of the mask
     mask_width=20; % Width of the mask
     [~, edges] = lee_region(img,mask_height,mask_width);
@@ -21,11 +22,17 @@ function [img_mec_bin, branch_array_mec, img_mec_skeleton, v_mean_curvature] = M
 
     % Mean curvature method
     v_mean_curvature = mean_curvature(S);
+    
+    for col = 1:size(edges,2)
+        v_mean_curvature(1:edges(1,col)+2, col) = 0;
+        v_mean_curvature(edges(2,col)-6:end, col) = 0;
+    end
 
+    
     img_mec_bin = v_mean_curvature;
 
     % Binarise the vein image
-    md = 0.01;
+    md = median(v_mean_curvature(v_mean_curvature>0));
     img_mec_bin = v_mean_curvature > md; 
 
     bw1 = filledgegaps(img_mec_bin, 7);
