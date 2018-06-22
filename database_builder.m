@@ -10,8 +10,8 @@ imageSet = read_imageSet('0001','0060');
 % update user
 fprintf('DATABASE: Preparing...\n');
 
-START_PERSON = 7;          % range: 1 - 60
-STOP_PERSON = 10;          % range: 1 - 60
+START_PERSON = 30;          % range: 1 - 60
+STOP_PERSON = 60;          % range: 1 - 60
 
 START_FINGER = 1;          % range: 1 - 6
 STOP_FINGER = 6;           % range: 1 - 6
@@ -23,7 +23,7 @@ RL_SKEL = true;            % Enable RL (repeated line tracking)
 MAC_SKEL_LBP = true;       % Enable MAC (maximum curvature) and LBP (local binary pattern)
 MEC_SKEL = true;           % Enable MEC (mean curvature)
 LBP_histograms = true;     % Enable histogram of LBPs
-LBP_completeRun = true;    % Use the old database to add th LBPs to the database
+LBP_completeRun = true;    % Use the old database to add the LBPs to the database
 % Set to true if you are building the entire database and not just the LBP histograms.
 
 % calculate total iterations

@@ -1,11 +1,13 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
+% choose one test method for matching
 test_method = 'RL';
 %test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
+% choose one matching method for matching
 match_method = 'template';
 %match_method = 'distance';
 
@@ -16,13 +18,12 @@ selected_input_image = imread(file);
 % get person, finger and number of selected input image
 numbers = sscanf(file, '%d_%d_%d_*');
 
+% get person info from file name
 person_reference = numbers(1);
 finger_reference = numbers(2);
 number_reference = numbers(3);
    
-fprintf('Processing input image...\n');
-
-% turn off all warnings
+% suppress all warnings
 warning('off','all')
 
 % intialize progress counter
@@ -33,6 +34,9 @@ RL_THRESHOLD = 20;
 MAC_THRESHOLD = 7.6;
 MEC_THRESHOLD = 90;
 LBP_THRESHOLD = 1;
+
+% print progress
+fprintf('Processing input image...\n');
 
 %% input image to database data
 current_source_img_ref = selected_input_image;
@@ -130,7 +134,4 @@ for compare_with = 1:data_count
         fprintf('Same image \n');
     end
 end
-
-
-
 
