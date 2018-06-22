@@ -1,8 +1,8 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-test_method = 'RL';
-%test_method = 'MAC';
+%test_method = 'RL';
+test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
@@ -11,10 +11,10 @@ match_method = 'template';
 
 % select start and stop entry of database to evaluate, range depends on database size
 START_ENTRY = 1;
-STOP_ENTRY = 96;
+STOP_ENTRY = 48;
 
 % load database
-load 'database.mat';
+load 'testing_database.mat';
 
 % fill matches array with -1
 matches_array = ones((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY))*-1;
@@ -128,5 +128,5 @@ end
 
 % calculate EER, ROC, print result and show graphs
 [EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
-fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EER, EERthreshold, ROC);
+fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EERthreshold, EER, ROC);
 
