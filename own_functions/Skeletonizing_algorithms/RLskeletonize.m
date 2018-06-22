@@ -18,5 +18,10 @@ function [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = RLsk
     end
 
     [img_rl_bin, branch_array_rl, img_rl_skeleton, img_rl_grayscale] = repeatedLineTracking(img_gauss, fvr);
+    
+    for col = 1:size(edges,2)
+        img_rl_bin(1:edges(1,col)+2, col) = 0;
+        img_rl_bin(edges(2,col)-2:end, col) = 0;
+    end
 
 end

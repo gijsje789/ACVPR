@@ -10,8 +10,8 @@ imageSet = read_imageSet('0001','0060');
 % update user
 fprintf('DATABASE: Preparing...\n');
 
-START_PERSON = 30;          % range: 1 - 60
-STOP_PERSON = 60;          % range: 1 - 60
+START_PERSON = 31;          % range: 1 - 60
+STOP_PERSON = 34;          % range: 1 - 60
 
 START_FINGER = 1;          % range: 1 - 6
 STOP_FINGER = 6;           % range: 1 - 6

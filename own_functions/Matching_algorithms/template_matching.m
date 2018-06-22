@@ -8,13 +8,16 @@ function full_match_percentage = template_matching(img_reference, img)
 % Returns:
 %  full_match_percentage  -    output match percentage
 
+img_greyscale = img;
+img_greyscale_ref = img_reference;
+
 % detect surface features of both
-ptsOriginal  = detectSURFFeatures(img,'MetricThreshold',1000);
-ptsCompare = detectSURFFeatures(img_reference,'MetricThreshold',1000);
+ptsOriginal  = detectSURFFeatures(img_greyscale,'MetricThreshold',1000);
+ptsCompare = detectSURFFeatures(img_greyscale_ref,'MetricThreshold',1000);
 
 % read features and valid points
-[featuresOriginal,validPtsOriginal] = extractFeatures(img,ptsOriginal);
-[featuresDistorted,validPtsDistorted] = extractFeatures(img_reference,ptsCompare);
+[featuresOriginal,validPtsOriginal] = extractFeatures(img_greyscale,ptsOriginal);
+[featuresDistorted,validPtsDistorted] = extractFeatures(img_greyscale_ref,ptsCompare);
 
 % get index pairs
 index_pairs = matchFeatures(featuresOriginal,featuresDistorted);

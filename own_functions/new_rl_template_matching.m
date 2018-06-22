@@ -9,12 +9,12 @@ SHOW_FIGURES = true;
 
 
 
-im_original = im2double(imread('0023_3_2_120509-163547.png'));  %% 47
+%im_original = im2double(imread('0023_3_2_120509-163547.png'));  %% 47
 
 % read comparison image
-%im_original = data{1,1};
+im_original = data{49,1};
 % read image to compare
-im_compare = data{2,1};
+im_compare = data{50,1};
 
 if SHOW_FIGURES == true
     figure;
@@ -37,185 +37,55 @@ for iteration = 1:2
     %img = enhance_finger(im2double(img));
     img = imresize(im2double(img),0.5);
     
-    % variables for Gaussian filter
-    sigma = 4; L = 2*ceil(sigma*3)+1;
-    h = fspecial('gaussian', L, sigma);
-    img = imfilter(img, h, 'replicate', 'conv');
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img);
-        title('after Gaussian');
+    mask_height=4; % Height of the mask
+    mask_width=20; % Width of the mask
+    [~, edges] = lee_region(img,mask_height,mask_width);
+
+    for col = 1:size(edges,2)
+        img(1:edges(1,col), col) = 0;
+        img(edges(2,col):end, col) = 0;
     end
+
+    % gaussian filter
+    S = im2double(img);
+
+    sigma = 3.2;
+    L = 2*ceil(sigma*3)+1;
+    h = fspecial('gaussian', L, sigma);% create the PSF
+    imfiltered = imfilter(S, h, 'replicate', 'conv'); % apply the filter
+
+    S = imfiltered;
+
+    % Mean curvature method
+    v_mean_curvature = mean_curvature(S);
     
-    mask_height = 4; mask_width = 20; 
-    [fvr, edges] = lee_region(img,mask_height,mask_width);
-    %x = 1: 1 : length(edges(2,:));
-    
-    [m,n] = size(img);
-    
-    for c = 1 : n
-        for r = 1 : m
-            if r > edges(1,c)
-                img(1:r-1,c) = 0;
-                break
-            end
-        end
+    for col = 1:size(edges,2)
+        v_mean_curvature(1:edges(1,col)+2, col) = 0;
+        v_mean_curvature(edges(2,col)-6:end, col) = 0;
     end
+
     
-    for c = 1 : n
-        for r = 1 : m
-            if r > edges(2,c)
-                img(r:m,c) = 0;
-                break
-            end
-        end
-    end
-    
-    % repeated lines method
-    %fvr = ones(size(im));
-    veins = repeated_line(img, fvr, 3000, 1, 17);
-    
-    for c = 1 : n
-        for r = 1 : m
-            if r > edges(1,c)
-                veins(1:r,c) = 0;
-                break
-            end
-        end
-    end
-    
-    for c = 1 : n
-        for r = 1 : m
-            if r > edges(2,c)
-                veins(r-1:m,c) = 0;
-                break
-            end
-        end
-    end
-    
-     veins = veins*-1;
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(veins,[-150 0]);
-        axis off;
-        %title('RL veins');
-    end
-    
-    print -r300 -dpng veins_gray.png     % Print the result to file
-    
-    
+    img_mec_bin = v_mean_curvature;
+
     % Binarise the vein image
-    md = median(veins(veins>0));
-    v_repeated_line_bin = veins > md;
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(v_repeated_line_bin);
-        title('RL veins bin');
-    end
-    
-    img = v_repeated_line_bin;
-    
-    % clean and fill (correct isolated black and white pixels)
-    img_rl_clean = bwmorph(img,'clean');
-    img_rl_fill = bwmorph(img_rl_clean,'fill');
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_rl_fill);
-        title('cleaned filled');
-    end
-    
-    % skeletonize first time
-    img_rl_skel = bwmorph(img_rl_fill,'skel',inf);
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_rl_skel);
-        title('skeletonized');
-    end
-    
-    % open filter image
-    img_rl_open = bwareaopen(img_rl_skel, 10);
-    
-    img_filledgaps = filledgegaps(img_rl_open, 7);
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_filledgaps);
-        title('opened + fg');
-    end
-    
-    % find branchpoints & endpoints
-    B = bwmorph(img_filledgaps, 'branchpoints');
-    E = bwmorph(img_filledgaps, 'endpoints');
-    
-    [y,x] = find(E);
-    B_loc = find(B);
-    
-    Dmask = false(size(img_filledgaps));
-    
-    % find dead ends
-    for i = 1:numel(x)
-        D = bwdistgeodesic(img_filledgaps,x(i),y(i));
-        distanceToBranchPt = min(D(B_loc));
-        if distanceToBranchPt < 10
-            Dmask(D < distanceToBranchPt) = true;
-        end
-    end
-    
-    % subtract dead ends
-    skelD = img_filledgaps - Dmask;
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(skelD);
-        title('dead ends gone');
-    end
-    
-    % clean and fill (correct isolated black and white pixels)
-    img_rl_clean = bwmorph(skelD,'clean');
-    img_rl_result = bwmorph(img_rl_clean,'fill');
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_rl_result);
-        title('cleaned');
-    end
-    
-    % skeletonize again to optimize branchpoint detection
-    img_rl_result = bwmorph(img_rl_result,'skel',inf);
-    
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_rl_result);
-        title('skeletonized');
-    end
+    md = median(v_mean_curvature(v_mean_curvature>0));
+    img_mec_bin = v_mean_curvature > md; 
+
+    bw1 = filledgegaps(img_mec_bin, 7);
+    img_mec_skeleton  = bwareaopen(bw1,10);
     
     % find branchpoints remaining and put in array
-    bw1br = bwmorph(img_rl_result, 'branchpoints');
+    bw1br = bwmorph(img_mec_skeleton, 'branchpoints');
     [i,j] = find(bw1br);
-    branch_array = [j,i];
-    img_rl_result = img_rl_result*-1;
+    branch_array_mec = [j,i];
     
-    if SHOW_FIGURES == true
-        figure;
-        imshow(img_rl_result, []); hold all;
-        plot(branch_array(:,1),branch_array(:,2),'o','color','green','linewidth',1,'markersize',2);
-        axis off;
-        %title('skeletonized + branchpoints');
-    end
-    
-    print -r300 -dpng skelbranch.png     % Print the result to file
     
     if iteration == 1
-        im_original_skel = img_rl_result;
-        im_original = img_rl_fill;
+        im_original_skel = img_mec_skeleton;
+        im_original = img_mec_bin;
     else
-        im_compare_skel = img_rl_result;
-        im_compare = img_rl_fill;
+        im_compare_skel =  img_mec_skeleton;
+        im_compare = img_mec_bin;
     end
     
 end
