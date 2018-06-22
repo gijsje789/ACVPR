@@ -10,8 +10,13 @@ match_method = 'template';
 %match_method = 'distance';
 
 % select start and stop entry of database to evaluate, range depends on database size
+<<<<<<< HEAD
 START_ENTRY = 49;
 STOP_ENTRY = 96;
+=======
+START_ENTRY = 1;
+STOP_ENTRY = 24*3;
+>>>>>>> c10bc305f7fca60838f5e94304d5b545eb877400
 
 % load database
 load 'database.mat';
@@ -32,9 +37,9 @@ for compare = START_ENTRY:STOP_ENTRY
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
     img_mec_bin_reference = data{compare,7};                 % MEC binary
-    img_rl_skel_reference = data{compare,8};                 % branchpoint array RL
-    img_mac_skel_reference = data{compare,9};                % branchpoint array MAC
-    img_mec_skel_reference = data{compare,10};               % branchpoint array MEC
+    img_rl_skel_reference = data{compare,8};                 % skeletonized RL
+    img_mac_skel_reference = data{compare,9};                % skeletonized MAC
+    img_mec_skel_reference = data{compare,10};               % skeletonized MEC
     img_rl_gray_reference = data{compare,11};                % gray RL image or LBP
     img_mac_gray_reference = data{compare,12};               % gray MAC image for LBP
     img_mec_gray_reference = data{compare,13};               % gray MEC image for LBP
@@ -52,9 +57,9 @@ for compare = START_ENTRY:STOP_ENTRY
         img_rl_bin = data{compare_with,5};                  % RL binary
         img_mac_bin = data{compare_with,6};                 % MAC binary
         img_mec_bin = data{compare_with,7};                 % MEC binary
-        img_rl_skel = data{compare_with,8};                 % branchpoint array RL
-        img_mac_skel = data{compare_with,9};                % branchpoint array MAC
-        img_mec_skel = data{compare_with,10};               % branchpoint array MEC
+        img_rl_skel = data{compare_with,8};                 % skeletonized RL
+        img_mac_skel = data{compare_with,9};                % skeletonized MAC
+        img_mec_skel = data{compare_with,10};               % skeletonized MEC
         img_rl_gray = data{compare_with,11};                % gray RL image or LBP
         img_mac_gray = data{compare_with,12};               % gray MAC image for LBP
         img_mec_gray = data{compare_with,13};               % gray MEC image for LBP
