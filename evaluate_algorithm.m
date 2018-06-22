@@ -1,8 +1,8 @@
 % ACVPR finger vein verification
 clc; clear; close all;
 
-test_method = 'RL';
-%test_method = 'MAC';
+%test_method = 'RL';
+test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
@@ -11,10 +11,10 @@ match_method = 'template';
 
 % select start and stop entry of database to evaluate, range depends on database size
 START_ENTRY = 1;
-STOP_ENTRY = 96;
+STOP_ENTRY = 24*3;
 
 % load database
-load 'database.mat';
+load 'testing_database.mat';
 
 % fill matches array with -1
 matches_array = ones((1 + STOP_ENTRY - START_ENTRY),(1 + STOP_ENTRY - START_ENTRY))*-1;
@@ -32,9 +32,9 @@ for compare = START_ENTRY:STOP_ENTRY
     img_rl_bin_reference = data{compare,5};                  % RL binary
     img_mac_bin_reference = data{compare,6};                 % MAC binary
     img_mec_bin_reference = data{compare,7};                 % MEC binary
-    img_rl_skel_reference = data{compare,8};                 % branchpoint array RL
-    img_mac_skel_reference = data{compare,9};                % branchpoint array MAC
-    img_mec_skel_reference = data{compare,10};               % branchpoint array MEC
+    img_rl_skel_reference = data{compare,8};                 % skeletonized RL
+    img_mac_skel_reference = data{compare,9};                % skeletonized MAC
+    img_mec_skel_reference = data{compare,10};               % skeletonized MEC
     img_rl_gray_reference = data{compare,11};                % gray RL image or LBP
     img_mac_gray_reference = data{compare,12};               % gray MAC image for LBP
     img_mec_gray_reference = data{compare,13};               % gray MEC image for LBP
@@ -52,9 +52,9 @@ for compare = START_ENTRY:STOP_ENTRY
         img_rl_bin = data{compare_with,5};                  % RL binary
         img_mac_bin = data{compare_with,6};                 % MAC binary
         img_mec_bin = data{compare_with,7};                 % MEC binary
-        img_rl_skel = data{compare_with,8};                 % branchpoint array RL
-        img_mac_skel = data{compare_with,9};                % branchpoint array MAC
-        img_mec_skel = data{compare_with,10};               % branchpoint array MEC
+        img_rl_skel = data{compare_with,8};                 % skeletonized RL
+        img_mac_skel = data{compare_with,9};                % skeletonized MAC
+        img_mec_skel = data{compare_with,10};               % skeletonized MEC
         img_rl_gray = data{compare_with,11};                % gray RL image or LBP
         img_mac_gray = data{compare_with,12};               % gray MAC image for LBP
         img_mec_gray = data{compare_with,13};               % gray MEC image for LBP
@@ -128,5 +128,5 @@ end
 
 % calculate EER, ROC, print result and show graphs
 [EER, EERthreshold, ROC] = calculate_EERorROC(matches_array, 'showEER', 'showROC');
-fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EER, EERthreshold, ROC);
+fprintf('Optimal threshold = %.2f%% \nEER = %.2f%% \nROC = %.2f%%\n',EERthreshold, EER, ROC);
 
