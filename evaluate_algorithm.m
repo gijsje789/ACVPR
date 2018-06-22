@@ -68,20 +68,20 @@ for compare = START_ENTRY:STOP_ENTRY
                 if strcmp(match_method, 'template')
                     full_match_percentage = template_matching(img_rl_bin_reference, img_rl_bin);
                 elseif strcmp(match_method, 'distance')
-                    full_match_percentage = distance_tr_test(img_rl_skel_reference, img_rl_skel);
+                    full_match_percentage = distance_tr_test(img_rl_bin_reference, img_rl_bin);
                 end
             elseif strcmp(test_method,'MAC')
                 if strcmp(match_method, 'template')
                     full_match_percentage = template_matching(img_mac_bin_reference, img_mac_bin);
                 elseif strcmp(match_method, 'distance')
-                    full_match_percentage = distance_tr_test(img_mac_skel_reference, img_mac_skel);
+                    full_match_percentage = distance_tr_test(img_mac_bin_reference, img_mac_bin);
                 end
             elseif strcmp(test_method,'MEC')
                 if strcmp(match_method, 'template')
                     %full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin, img_mec_gray_reference, img_mec_gray);
                     full_match_percentage = template_matching(img_mec_bin_reference, img_mec_bin);
                 elseif strcmp(match_method, 'distance')
-                    full_match_percentage = distance_tr_test(img_mec_skel_reference, img_mec_skel);
+                    full_match_percentage = distance_tr_test(img_mec_bin_reference, img_mec_bin);
                 end
             elseif strcmp(test_method,'LBP')
                 error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
