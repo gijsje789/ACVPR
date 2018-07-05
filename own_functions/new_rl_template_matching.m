@@ -3,7 +3,7 @@ clc; clear; close all;
 
 SHOW_FIGURES = true;
 
- load database
+ load final_database
 %load 'database - full.mat';
 [data_count, ~] = size(data);
 
@@ -12,9 +12,9 @@ SHOW_FIGURES = true;
 %im_original = im2double(imread('0023_3_2_120509-163547.png'));  %% 47
 
 % read comparison image
-im_original = data{49,1};
+im_original = data{19,1};
 % read image to compare
-im_compare = data{50,1};
+im_compare = data{1,1};
 
 if SHOW_FIGURES == true
     figure;
@@ -31,8 +31,6 @@ for iteration = 1:2
     else
         img = im_compare;
     end
-    
-    
     
     %img = enhance_finger(im2double(img));
     img = imresize(im2double(img),0.5);
@@ -63,15 +61,16 @@ for iteration = 1:2
         v_mean_curvature(1:edges(1,col)+2, col) = 0;
         v_mean_curvature(edges(2,col)-6:end, col) = 0;
     end
-
     
-    img_mec_bin = v_mean_curvature;
+    %img_mec_bin = v_mean_curvature;
 
     % Binarise the vein image
     md = median(v_mean_curvature(v_mean_curvature>0));
     img_mec_bin = v_mean_curvature > md; 
 
-    bw1 = filledgegaps(img_mec_bin, 7);
+    img_skel = bwmorph(img_mec_bin,'skel',Inf);
+    
+    bw1 = filledgegaps(img_skel, 7);
     img_mec_skeleton  = bwareaopen(bw1,10);
     
     % find branchpoints remaining and put in array
@@ -120,23 +119,24 @@ showMatchedFeatures(im_original,im_compare,inlierPtsOriginal,inlierPtsDistorted)
 title('Matching points (inliers only)');
 
 % warp compare image to original transform
-outputView = imref2d(size(im_original));
-Ir = imwarp(im_compare,tform,'OutputView',outputView);
+outputView = imref2d(size(im_original_skel));
+Ir = imwarp(im_compare_skel,tform,'OutputView',outputView);
 
 % add images to see effect of transformation
-comb_after = Ir + im_original;
-comb_before = im_compare + im_original;
+comb_after = Ir + im_original_skel;
+comb_before = im_compare_skel + im_original_skel;
 
 % show in RG or B
-comb_before(:,:,1) = im_compare;
-comb_before(:,:,3) = im_original;
+comb_before(:,:,2) = im_compare_skel;
+comb_before(:,:,3) = im_original_skel;
 
 % calculate match
 full_match_percentage = 100*sum(comb_after(:) == 2)/(sum(comb_after(:) == 1) + sum(comb_after(:) == 2));
+c = imfuse(im_compare_skel, im_original_skel, 'colorchannels', 'green-magenta');
 
 % show result before
 subplot(2,2,3);
-imshow(comb_before);
+imshow(c);
 title('merge before transform');
 
 % show result after

@@ -3,13 +3,13 @@ clc; clear; close all;
 
 % ADJUST ME PLEASEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 %test_method = 'RL';
-%test_method = 'MAC';
+test_method = 'MAC';
 %test_method = 'MEC';
 %test_method = 'LBP';
 
 % ADJUST ME PLEASEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 %match_method = 'template';
-%match_method = 'distance';
+match_method = 'distance';
 
 % select start and stop entry of database to evaluate, range depends on database size
 START_ENTRY = 1;
@@ -86,9 +86,9 @@ for compare = START_ENTRY:STOP_ENTRY
                     full_match_percentage = distance_tr_test(img_mec_bin_reference, img_mec_bin);
                 end
             elseif strcmp(test_method,'LBP')
-                error = lbp_matching(img_rl_gray_reference, img_rl_gray, img_rl_bin_reference, img_rl_bin);
+                %error = lbp_matching(img_rl_gray_reference, img_rl_gray, img_rl_bin_reference, img_rl_bin);
                 %error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
-                %error = lbp_matching(img_mec_gray_reference, img_mec_gray, img_mec_bin_reference, img_mec_bin);
+                error = lbp_matching(img_mec_gray_reference, img_mec_gray, img_mec_bin_reference, img_mec_bin);
                 if error ~= -1
                     matches_array(compare - START_ENTRY + 1,compare_with - START_ENTRY + 1) = error;
                 end

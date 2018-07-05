@@ -1,4 +1,5 @@
-% ACVPR finger vein verification
+% Mark Bruijn, Maikel Coenen, Jelle Meijerink, Gijs de Vries
+% ACVPR: project finger vein verification
 clc; clear; close all;
 
 % choose one test method for matching
@@ -56,7 +57,7 @@ img_ref = imresize(im2double(current_source_img_ref), 0.5);
 fprintf('Loading database...\n');
 
 % load database
-load 'testing_database.mat';
+load 'final_database.mat';
 [data_count, ~] = size(data);
 
 %% match with other database entries
@@ -148,8 +149,7 @@ for compare_with = 1:data_count
             fprintf('%.2f%%\n',full_match_percentage);
             
         elseif strcmp(test_method,'LBP')
-            error = lbp_matching(max_curvature_gray_ref, img_mac_gray, img_mac_bin_ref, img_mac_bin);
-            
+            error = lbp_matching(img_mac_gray_reference, img_mac_gray, img_mac_bin_reference, img_mac_bin);
             if error < LBP_THRESHOLD
                 position =  [0 0];
                 value = ['Person: ' num2str(person), ', finger: ' num2str(finger), ', photo: ' num2str(number), '        (', num2str(round(error,1)), ' error)'];
